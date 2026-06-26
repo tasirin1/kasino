@@ -109,6 +109,7 @@
       const script = document.createElement('script');
       script.src = `/games/${gameId}/index.js`;
       script.onload = async () => {
+        try {
         const module = window.__gameModules?.[gameId];
         if (!module) {
           container.innerHTML = `<div class="error-page"><h2>Module not found</h2><p>Game module ${gameId} tidak ditemukan</p></div>`;
@@ -123,7 +124,13 @@
         }
 
         currentGame = module;
-        await module.init(container, config);
+        try {
+          await module.init(container, config);
+        } catch (e) {
+          console.error('[GameLoader] Module init error:', e);
+          container.innerHTML = '<div class="error-page"><h2>Error init game</h2><p>' + (e.message || 'Unknown error') + '</p><a href="/" class="lobby-btn">Kembali ke Lobby</a></div>';
+          return;
+        }
 
         // Update balance periodically if logged in
         if (api._token) {
@@ -134,6 +141,10 @@
       };
       script.onerror = () => {
         container.innerHTML = `<div class="error-page"><h2>Error loading game</h2><p>Gagal memuat modul game</p></div>`;
+        } catch (e) {
+          console.error('[GameLoader] Script onload error:', e);
+          container.innerHTML = '<div class="error-page"><h2>Error</h2><p>' + (e.message || 'Unknown error') + '</p></div>';
+        }
       };
       document.body.appendChild(script);
 
