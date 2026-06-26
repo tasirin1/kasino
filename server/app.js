@@ -33,9 +33,20 @@ app.use('/games', express.static(path.join(__dirname, '../client/games'), { inde
 app.use('/assets', express.static(path.join(__dirname, '../client/assets'), { index: false }));
 app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
-// SPA fallback
-app.get('*', (req, res) => {
+// SPA fallback — hanya untuk route aplikasi, bukan file statis
+app.get(['/', '/play', '/play/*', '/lobby', '/game', '/admin', '/login', '/register', '/profile', '/wallet'], (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));
+});
+
+// 404 untuk asset yang tidak ditemukan
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ error: 'API endpoint not found' });
+  } else if (req.path.match(/\.(css|js|svg|png|jpg|ico|json|html)$/)) {
+    res.status(404).send('Not found');
+  } else {
+    res.sendFile(path.join(__dirname, '../client/index.html'));
+  }
 });
 
 module.exports = app;
