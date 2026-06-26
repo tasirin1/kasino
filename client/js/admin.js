@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!api._token) { window.location.href = 'login.html'; return; }
 
   const me = await api.get('/api/user');
-  if (me.error || !me.isAdmin) { window.location.href = 'index.html'; return; }
+  if (me.error || !me.isAdmin) { window.location.href = '/'; return; }
 
   const fmt = n => 'Rp' + (n ?? 0).toLocaleString('id-ID');
 

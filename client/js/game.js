@@ -87,7 +87,7 @@ class GameManager {
     });
     this.el.logoutBtn?.addEventListener('click', () => {
       api.clearToken();
-      window.location.href = 'login.html';
+      window.location.href = '/login.html';
     });
     document.addEventListener('keydown', (e) => {
       if (e.code === 'Space' && !this.state.spinning) { e.preventDefault(); this.spin(); }
@@ -96,7 +96,7 @@ class GameManager {
 
   async _loadUser() {
     const user = await api.get('/api/user');
-    if (user.error) { window.location.href = 'login.html'; return; }
+    if (user.error) { window.location.href = '/login.html'; return; }
     this.state.balance = user.balance;
     this.state.username = user.username;
     this.state.settings = user.settings || {};
@@ -226,6 +226,6 @@ class GameManager {
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
-  if (!api._token) { window.location.href = 'login.html'; return; }
+  if (!api._token) { window.location.href = '/login.html'; return; }
   window.game = new GameManager();
 });

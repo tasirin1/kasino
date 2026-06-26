@@ -135,6 +135,7 @@ body{display:flex;align-items:center;justify-content:center;
 .particle{position:fixed;pointer-events:none;z-index:999;border-radius:50%}
 
 /* ===== ADMIN ===== */
+#adminApp{min-height:100dvh;overflow-y:auto;padding-bottom:20px}
 #adminApp{width:100vw;height:100dvh;overflow-y:auto;background:#050008;padding:16px}
 .admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .admin-header h1{font-size:22px;color:#FFD700;text-shadow:0 0 20px rgba(255,215,0,0.2)}
@@ -196,8 +197,10 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 
 
 /* ===== PREMIUM LOBBY ===== */
-#lobby{position:relative;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#1a0030,#0a0018,#000000);
-  overflow-x:hidden;padding-bottom:70px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+#lobby{position:relative;height:100dvh;overflow-y:auto;overflow-x:hidden;
+  background:radial-gradient(ellipse at 50% 0%,#1a0030,#0a0018,#000000);
+  padding-bottom:70px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  -webkit-overflow-scrolling:touch}
 #lobby *{box-sizing:border-box}
 
 /* PARTICLES */
@@ -377,9 +380,9 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .auth-link a{color:#D5AD6D;text-decoration:none}
 
 /* ===== GAME PAGE ===== */
-#gameApp{display:flex;flex-direction:column;height:100vh;background:radial-gradient(ellipse at top,#1a0020,#0a0010)}
+#gameApp{display:flex;flex-direction:column;height:100dvh;overflow:hidden;background:radial-gradient(ellipse at top,#1a0020,#0a0010)}
 #gameTopBar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;
-  background:rgba(26,0,32,0.95);border-bottom:1px solid rgba(213,173,109,0.1);flex-shrink:0}
+  background:rgba(26,0,32,0.95);border-bottom:1px solid rgba(213,173,109,0.1);flex-shrink:0;min-height:36px}
 .g-back{background:none;border:none;color:#D5AD6D;font-size:12px;cursor:pointer;padding:4px 8px}
 .g-title{font-size:14px;font-weight:700;color:#D5AD6D}
 .g-right{display:flex;align-items:center;gap:8px}
@@ -387,22 +390,24 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .g-username{font-size:11px;color:rgba(213,173,109,0.6)}
 .g-btn{padding:4px 10px;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer}
 .g-btn.tiny{padding:3px 8px;font-size:10px;background:linear-gradient(180deg,#D5AD6D,#B8860B);color:#1a0020}
-.game-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px}
-.game-canvas{width:100%;max-width:400px;height:100%;display:flex;flex-direction:column;justify-content:center}
+.game-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:2px;min-height:0}
+.game-canvas{width:100%;max-width:400px;height:100%;max-height:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 
 /* ===== CLASSIC 777 (in-game) ===== */
-#c777{display:flex;flex-direction:column;height:100%;width:100%}
+#c777{display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden}
 #c777WinMsg{text-align:center;padding:2px 0;flex-shrink:0}
-.win-msg{text-align:center;padding:2px 0}
+.win-msg{text-align:center;padding:2px 0;flex-shrink:0}
 .win-text{font-size:14px;font-weight:700;color:#D5AD6D;text-shadow:0 0 10px rgba(213,173,109,0.3)}
-#c777Reels{flex:1;display:flex;gap:4px;padding:4px;min-height:0;align-items:stretch}
-.reels{flex:1;display:flex;gap:4px;padding:4px;min-height:0}
+#c777Reels{flex:1;display:flex;gap:3px;padding:2px;min-height:0;align-items:stretch}
+.reels{flex:1;display:flex;gap:3px;padding:2px;min-height:0}
+.reel{flex:1;position:relative;overflow:hidden;border-radius:6px;
+  background:rgba(0,0,0,0.4);border:1px solid rgba(213,173,109,0.12)}
 .reel{flex:1;position:relative;overflow:hidden;border-radius:8px;
   background:rgba(0,0,0,0.4);border:1px solid rgba(213,173,109,0.15)}
 #c777Controls{flex-shrink:0;padding:4px 6px}
-.controls{flex-shrink:0;padding:4px 6px}
-.c-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.c-top{margin-bottom:4px}
+.controls{flex-shrink:0;padding:3px 4px}
+.c-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.c-top{margin-bottom:2px}
 .bet-group{display:flex;align-items:center;gap:4px}
 .bet-btn-sm{width:28px;height:28px;border:none;border-radius:6px;background:rgba(213,173,109,0.15);
   color:#D5AD6D;font-size:16px;font-weight:700;cursor:pointer}
@@ -415,8 +420,8 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .ctrl-left,.ctrl-right{display:flex;gap:4px}
 .toggle-sm{display:flex;align-items:center;gap:3px;font-size:10px;color:rgba(180,160,220,0.5);cursor:pointer}
 .toggle-sm input{accent-color:#D5AD6D}
-.spin-btn-lg{padding:10px 28px;border:none;border-radius:8px;background:linear-gradient(180deg,#FF6B6B,#C62828);
-  color:#fff;font-size:16px;font-weight:800;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,0.3);
+.spin-btn-lg{padding:8px 20px;border:none;border-radius:8px;background:linear-gradient(180deg,#FF6B6B,#C62828);
+  color:#fff;font-size:15px;font-weight:800;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,0.3);
   box-shadow:0 0 20px rgba(255,107,107,0.3);transition:transform 0.15s}
 .spin-btn-lg:active{transform:scale(0.95)}
 .spin-btn-lg:disabled{opacity:0.5}

@@ -145,7 +145,7 @@
 
   // Back to lobby
   document.getElementById('backToLobby')?.addEventListener('click', () => {
-    if (currentGame && currentGame.destroy) current.game.destroy();
+    if (currentGame && currentGame.destroy) currentGame.destroy();
     window.location.href = '/';
   });
 

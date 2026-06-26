@@ -262,12 +262,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Wallet navigates to game page, Profile shows auth modal
   document.getElementById('navWallet')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (api._token) window.location.href = '/play/classic777';
+    if (api._token) showWalletModal();
     else showAuthModal('login');
   });
   document.getElementById('navProfile')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (api._token) window.location.href = '/play/classic777';
+    if (api._token) showProfileModal();
     else showAuthModal('login');
   });
   document.getElementById('navPromo')?.addEventListener('click', (e) => {
@@ -278,6 +278,57 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     document.querySelector('.l-grid')?.scrollIntoView({ behavior: 'smooth' });
   });
+
+  // ===== PROFILE MODAL =====
+  async function showProfileModal() {
+    const user = await api.get('/api/user');
+    if (user.error) { showAuthModal('login'); return; }
+    modal.style.display = 'flex';
+    modalBody.innerHTML = `
+      <div class="l-auth-card" style="text-align:center">
+        <div style="font-size:48px;margin-bottom:8px">👤</div>
+        <h2 class="l-auth-title" style="font-size:16px">${user.username}</h2>
+        <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0">
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:6px">
+            <span style="color:rgba(180,160,220,0.5);font-size:12px">Saldo</span>
+            <span style="color:#4CAF50;font-weight:700;font-size:14px">Rp${(user.balance||0).toLocaleString('id-ID')}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:6px">
+            <span style="color:rgba(180,160,220,0.5);font-size:12px">Total Spin</span>
+            <span style="color:#D5AD6D;font-weight:700;font-size:14px">${user.totalSpins||0}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:6px">
+            <span style="color:rgba(180,160,220,0.5);font-size:12px">Menang</span>
+            <span style="color:#FF6B6B;font-weight:700;font-size:14px">${user.totalWins||0}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:6px">
+            <span style="color:rgba(180,160,220,0.5);font-size:12px">Total Taruhan</span>
+            <span style="color:#FFD700;font-weight:700;font-size:14px">Rp${(user.totalBet||0).toLocaleString('id-ID')}</span>
+          </div>
+        </div>
+        <button class="l-btn l-btn-gold l-btn-full" onclick="document.getElementById('authModal').style.display='none'">Tutup</button>
+      </div>`;
+  }
+
+  // ===== WALLET MODAL =====
+  async function showWalletModal() {
+    const user = await api.get('/api/user');
+    if (user.error) { showAuthModal('login'); return; }
+    modal.style.display = 'flex';
+    modalBody.innerHTML = `
+      <div class="l-auth-card" style="text-align:center">
+        <div style="font-size:48px;margin-bottom:8px">💰</div>
+        <h2 class="l-auth-title" style="font-size:16px">Dompet</h2>
+        <div style="background:linear-gradient(135deg,rgba(213,173,109,0.1),rgba(184,134,11,0.1));border-radius:12px;padding:16px;margin:12px 0">
+          <div style="font-size:10px;color:rgba(180,160,220,0.4);margin-bottom:4px">SALDO SAAT INI</div>
+          <div style="font-size:28px;font-weight:800;color:#D5AD6D">Rp${(user.balance||0).toLocaleString('id-ID')}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <a href="/play/classic777" class="l-btn l-btn-gold" style="flex:1;text-align:center;text-decoration:none;font-size:12px">Main</a>
+          <button class="l-btn l-btn-outline" style="flex:1;font-size:12px" onclick="document.getElementById('authModal').style.display='none'">Tutup</button>
+        </div>
+      </div>`;
+  }
 
   // ===== INIT =====
   initParticles();

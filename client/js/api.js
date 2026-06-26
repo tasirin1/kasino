@@ -17,7 +17,7 @@ const api = {
     try {
       const r = await fetch(path, { headers });
       const data = await r.json();
-      if (r.status === 401) { this.clearToken(); window.location.href = 'login.html'; }
+      if (r.status === 401) { this.clearToken(); }
       return data;
     } catch { return { error: 'Connection failed' }; }
   },
@@ -37,7 +37,7 @@ const api = {
     try {
       const r = await fetch(path, { method: 'POST', headers, body: JSON.stringify(body) });
       const data = await r.json();
-      if (r.status === 401) { this.clearToken(); window.location.href = 'login.html'; }
+      if (r.status === 401) { this.clearToken(); }
       return data;
     } catch { return { error: 'Connection failed' }; }
   },
