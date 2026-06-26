@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>777 Kasino — Admin</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="adminApp">
+  <header class="admin-header">
+    <h1>🎰 Admin Panel</h1>
+    <div class="admin-header-right">
+      <span id="adminServerStatus" class="admin-status">● Live</span>
+      <button id="adminLogout" class="admin-btn small">Logout</button>
+    </div>
+  </header>
+
+  <div class="admin-grid">
+    <!-- STATS -->
+    <div class="admin-card" id="statsCard">
+      <h3>📊 Statistik</h3>
+      <div class="stats-row"><span>Total Akun</span><strong id="statUsers">0</strong></div>
+      <div class="stats-row"><span>Total Saldo</span><strong id="statBalance">0</strong></div>
+      <div class="stats-row"><span>Total Spin</span><strong id="statSpins">0</strong></div>
+      <div class="stats-row"><span>RTP</span><strong id="statRTP">0%</strong></div>
+      <div class="stats-row"><span>Jackpot</span><strong id="statJackpot" class="gold">0</strong></div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="admin-card" id="configCard">
+      <h3>⚙️ Konfigurasi Game</h3>
+      <div class="form-row"><label>Difficulty</label><select id="cfgDifficulty"></select></div>
+      <div class="form-row"><label>Win Rate</label><span id="cfgWinRateVal">15%</span><input type="range" id="cfgWinRate" min="5" max="750" value="150"></div>
+      <div class="form-row"><label>Payout Multiplier</label><span id="cfgPayoutVal">3x</span><input type="range" id="cfgPayout" min="10" max="500" value="30"></div>
+      <div class="form-row"><label>Jackpot</label><input type="number" id="cfgJackpot" class="admin-input"></div>
+      <div class="form-row"><label>Starting Money</label><input type="number" id="cfgStartMoney" class="admin-input"></div>
+      <div class="form-row"><label>Min Bet</label><input type="number" id="cfgMinBet" class="admin-input"></div>
+      <div class="form-row"><label>Max Bet</label><input type="number" id="cfgMaxBet" class="admin-input"></div>
+      <button id="cfgSave" class="admin-btn">Simpan</button>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="admin-card" id="accountsCard">
+      <h3>👥 Kelola Akun <span id="accountCount"></span></h3>
+      <div class="admin-actions">
+        <button id="btnAddAccount" class="admin-btn small green">+ Tambah</button>
+        <button id="btnResetAll" class="admin-btn small red">Reset All</button>
+      </div>
+      <div id="accountList"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ws.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>777 Kasino — Register</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+<div class="auth-card">
+  <div class="auth-logo">🎰</div>
+  <h1 class="auth-title">DAFTAR AKUN</h1>
+  <form id="registerForm">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="regUser" placeholder="Min 3 characters" required autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="regPass" placeholder="Min 4 characters" required autocomplete="new-password">
+    </div>
+    <div id="regError" class="form-error"></div>
+    <button type="submit" class="auth-btn">DAFTAR</button>
+  </form>
+  <p class="auth-link">Sudah punya akun? <a href="login.html">Masuk</a></p>
+</div>
+<script src="js/api.js"></script>
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const user = document.getElementById('regUser').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const err = document.getElementById('regError');
+  err.textContent = '';
+
+  const res = await api.post('/api/register', { username: user, password: pass });
+  if (res.error) { err.textContent = res.error; return; }
+  api.setToken(res.token);
+  window.location.href = res.user.isAdmin ? 'admin.html' : 'index.html';
+});
+</script>
+</body>
+</html>

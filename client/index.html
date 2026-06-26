@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>777 Kasino — Slot</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- TOP BAR -->
+  <header id="topBar">
+    <div class="h-left">
+      <div class="h-item"><span class="h-lbl">BALANCE</span><span id="balanceDisplay" class="h-val">0</span></div>
+    </div>
+    <div class="h-center"><span class="h-title">777</span></div>
+    <div class="h-right">
+      <div class="h-item"><span class="h-lbl">BET</span><span id="betDisplay" class="h-val gold">100</span></div>
+      <button id="logoutBtn" class="h-reset" title="Logout">🚪</button>
+    </div>
+  </header>
+
+  <!-- WIN MSG -->
+  <div id="winMsg"><span id="winText">🎰 SPIN TO WIN</span></div>
+
+  <!-- REELS -->
+  <div id="reels">
+    <div class="reel" data-reel="0"></div>
+    <div class="reel" data-reel="1"></div>
+    <div class="reel" data-reel="2"></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div id="controls">
+    <div class="c-row c-top">
+      <div class="bet-group">
+        <button id="betDown" class="bet-btn">−</button>
+        <div class="bet-display"><span class="bet-lbl">BET</span><span id="betDisplay2" class="bet-val">100</span></div>
+        <button id="betUp" class="bet-btn">+</button>
+      </div>
+      <div class="win-group"><span class="win-lbl">WIN</span><span id="winDisplay" class="win-val">—</span></div>
+    </div>
+    <div class="c-row c-bottom">
+      <div class="ctrl-left">
+        <label class="toggle"><input type="checkbox" id="autoplay"><span>AUTO</span></label>
+        <label class="toggle"><input type="checkbox" id="turboMode"><span>TURBO</span></label>
+      </div>
+      <button id="spinBtn" class="spin-btn">SPIN</button>
+      <div class="ctrl-right"><button id="maxBet" class="ctrl-btn">MAX</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="historyPanel" class="history-panel">
+  <div class="history-header"><span>Riwayat</span><button id="closeHistory">✕</button></div>
+  <div id="historyList"></div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ws.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

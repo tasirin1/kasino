@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>777 Kasino — Login</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+<div class="auth-card">
+  <div class="auth-logo">🎰</div>
+  <h1 class="auth-title">777 KASINO</h1>
+  <p class="auth-sub">Premium Slot Experience</p>
+  <form id="loginForm">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" required autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" required autocomplete="current-password">
+    </div>
+    <div id="loginError" class="form-error"></div>
+    <button type="submit" class="auth-btn">MASUK</button>
+  </form>
+  <p class="auth-link">Belum punya akun? <a href="register.html">Daftar</a></p>
+</div>
+<script src="js/api.js"></script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+
+  const res = await api.post('/api/login', { username: user, password: pass });
+  if (res.error) { err.textContent = res.error; return; }
+  api.setToken(res.token);
+  window.location.href = res.user.isAdmin ? 'admin.html' : 'index.html';
+});
+</script>
+</body>
+</html>
