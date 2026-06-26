@@ -13,24 +13,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Static files
-app.use(express.static(path.join(__dirname, '../client')));
-app.use('/games', express.static(path.join(__dirname, '../client/games')));
-app.use(express.static(path.join(__dirname, '../public')));
-
 // API routes
 app.use('/api', authRoutes);
 app.use('/api', gameRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', gamesRoutes);
 
-// Serve SPA fallback
+// Route-specific pages (must be before static to avoid index.html hijack)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/lobby.html'));
 });
 app.get('/play/:gameId', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/game.html'));
 });
+
+// Static files
+app.use(express.static(path.join(__dirname, '../client'), { index: false }));
+app.use('/games', express.static(path.join(__dirname, '../client/games'), { index: false }));
+app.use(express.static(path.join(__dirname, '../public'), { index: false }));
+
+// SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));
 });
