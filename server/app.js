@@ -30,6 +30,7 @@ app.get('/play/:gameId', (req, res) => {
 // Static files
 app.use(express.static(path.join(__dirname, '../client'), { index: false }));
 app.use('/games', express.static(path.join(__dirname, '../client/games'), { index: false }));
+app.use('/assets', express.static(path.join(__dirname, '../client/assets'), { index: false }));
 app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
 // SPA fallback

@@ -3,86 +3,163 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>slotcasino tasirin — Lobby</title>
+<title>slotcasino tasirin — Casino Lobby</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="lobbyApp">
-  <!-- TOP BAR -->
-  <header id="lobbyTop">
-    <div class="lobby-logo">
-      <span class="lobby-logo-icon">🎰</span>
-      <span class="lobby-logo-text">slotcasino tasirin</span>
-    </div>
-    <div class="lobby-top-right">
-      <div id="lobbyJackpot" class="lobby-jackpot">💰 Rp0</div>
-      <div id="lobbyOnline" class="lobby-online">👥 0 online</div>
-      <div id="lobbyAuthArea">
-        <button id="lobbyLoginBtn" class="lobby-btn outline">Masuk</button>
-        <button id="lobbyRegisterBtn" class="lobby-btn">Daftar</button>
+<div id="lobby">
+  <!-- ===== PARTICLES BG ===== -->
+  <div id="particles"></div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="l-header">
+    <div class="l-header-inner">
+      <div class="l-logo">
+        <div class="l-logo-icon">🎰</div>
+        <div class="l-logo-text">
+          <span class="l-logo-title">slotcasino</span>
+          <span class="l-logo-sub">tasirin</span>
+        </div>
       </div>
-      <div id="lobbyProfileArea" style="display:none">
-        <span id="lobbyBalance" class="lobby-balance">Rp0</span>
-        <span id="lobbyUsername" class="lobby-username"></span>
-        <button id="lobbyLogoutBtn" class="lobby-btn tiny">Keluar</button>
+      <div class="l-header-right">
+        <div id="lJackpotHeader" class="l-jackpot-hdr">💰 <span id="lJackpotVal">0</span></div>
+        <div id="lGuestArea" class="l-guest">
+          <button id="lLoginBtn" class="l-btn l-btn-outline">Masuk</button>
+          <button id="lRegisterBtn" class="l-btn l-btn-gold">Daftar</button>
+        </div>
+        <div id="lUserArea" class="l-user" style="display:none">
+          <div class="l-user-balance">Rp<span id="lBalanceVal">0</span></div>
+          <div class="l-user-avatar" id="lAvatar">👤</div>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- BANNER CAROUSEL -->
-  <div id="bannerCarousel" class="banner-carousel">
-    <div class="banner-track" id="bannerTrack">
-      <div class="banner-slide" style="background:linear-gradient(135deg,#6a0010,#cc0033,#6a0010)">
-        <div class="banner-content">
-          <h2>🔥 Classic 777</h2>
-          <p>Jackpot hingga Rp500 Juta!</p>
-          <a href="/play/classic777" class="banner-btn">MAIN SEKARANG</a>
+  <!-- ===== HERO BANNER ===== -->
+  <section class="l-hero" id="lHero">
+    <div class="l-hero-track" id="heroTrack">
+      <div class="l-hero-slide" style="background:linear-gradient(135deg,#1a0000 0%,#4a0010 30%,#8b0020 60%,#1a0000 100%)">
+        <div class="l-hero-overlay"></div>
+        <div class="l-hero-content">
+          <div class="l-hero-badge">🔥 JACKPOT PROGRESIF</div>
+          <h2 class="l-hero-title">Classic 777</h2>
+          <p class="l-hero-desc">Menangkan jackpot hingga Rp500 Juta dengan 3 reel klasik</p>
+          <div class="l-hero-jackpot">💰 Rp<span class="l-hero-jp-val">500.000.000</span></div>
+          <a href="/play/classic777" class="l-hero-btn">MAIN SEKARANG</a>
+        </div>
+        <div class="l-hero-art">
+          <div class="l-hero-slot-icon">7</div>
+          <div class="l-hero-slot-icon">BAR</div>
+          <div class="l-hero-slot-icon">7</div>
         </div>
       </div>
-      <div class="banner-slide" style="background:linear-gradient(135deg,#003366,#0099FF,#003366)">
-        <div class="banner-content">
-          <h2>💎 Lucky Fruits</h2>
-          <p>Buah-buahan keberuntungan!</p>
-          <a href="/play/luckyfruits" class="banner-btn">MAIN SEKARANG</a>
+      <div class="l-hero-slide" style="background:linear-gradient(135deg,#00051a 0%,#001a4a 30%,#003399 60%,#00051a 100%)">
+        <div class="l-hero-overlay"></div>
+        <div class="l-hero-content">
+          <div class="l-hero-badge">💎 GAME BARU</div>
+          <h2 class="l-hero-title">Plinko</h2>
+          <p class="l-hero-desc">Jatuhkan bola dan raih multiplier hingga 1000x!</p>
+          <div class="l-hero-jackpot">⚡ Hingga <span class="l-hero-jp-val">1000x</span></div>
+          <a href="/play/plinko" class="l-hero-btn">MAIN SEKARANG</a>
+        </div>
+        <div class="l-hero-art">
+          <svg viewBox="0 0 200 160" class="l-hero-svg">
+            <circle cx="30" cy="20" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="60" cy="20" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="90" cy="20" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="120" cy="20" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="150" cy="20" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="45" cy="40" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="75" cy="40" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="105" cy="40" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="135" cy="40" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="30" cy="60" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="60" cy="60" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="90" cy="60" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="120" cy="60" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="150" cy="60" r="4" fill="#D5AD6D" opacity="0.6"/>
+            <circle cx="100" cy="10" r="8" fill="#FFD700" opacity="0.9">
+              <animate attributeName="cy" from="10" to="130" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
         </div>
       </div>
-      <div class="banner-slide" style="background:linear-gradient(135deg,#1a0030,#6600CC,#1a0030)">
-        <div class="banner-content">
-          <h2>📉 Plinko</h2>
-          <p>Multiplier hingga 1000x!</p>
-          <a href="/play/plinko" class="banner-btn">MAIN SEKARANG</a>
+      <div class="l-hero-slide" style="background:linear-gradient(135deg,#1a0010 0%,#4a0030 30%,#8b0060 60%,#1a0010 100%)">
+        <div class="l-hero-overlay"></div>
+        <div class="l-hero-content">
+          <div class="l-hero-badge">🪙 50:50 FAIR</div>
+          <h2 class="l-hero-title">Coin Flip</h2>
+          <p class="l-hero-desc">Tebak Heads atau Tails, multiplier 2x instan!</p>
+          <div class="l-hero-jackpot">⚡ 50% <span class="l-hero-jp-val">WIN RATE</span></div>
+          <a href="/play/coinflip" class="l-hero-btn">MAIN SEKARANG</a>
+        </div>
+        <div class="l-hero-art">
+          <div class="l-hero-coin-big">👑</div>
         </div>
       </div>
     </div>
-    <div class="banner-dots" id="bannerDots"></div>
+    <div class="l-hero-dots" id="heroDots"></div>
+  </section>
+
+  <!-- ===== JACKPOT BAR ===== -->
+  <div class="l-jackpot-bar">
+    <div class="l-jackpot-bar-item">
+      <span class="l-jb-label">Jackpot</span>
+      <span class="l-jb-value" id="lJackpotBar">Rp0</span>
+    </div>
+    <div class="l-jackpot-bar-item">
+      <span class="l-jb-label">Pemain Online</span>
+      <span class="l-jb-value" id="lOnlineCount">0</span>
+    </div>
+    <div class="l-jackpot-bar-item">
+      <span class="l-jb-label">Total Game</span>
+      <span class="l-jb-value" id="lTotalGames">0</span>
+    </div>
   </div>
 
-  <!-- GAME CATEGORIES -->
-  <div id="lobbyContent">
-    <div class="lobby-tabs">
-      <button class="lobby-tab active" data-cat="all">Semua</button>
-      <button class="lobby-tab" data-cat="slot">🎰 Slot</button>
-      <button class="lobby-tab" data-cat="arcade">🎮 Arcade</button>
-    </div>
-
-    <div id="gameGrid" class="game-grid">
-      <!-- Games rendered by JS -->
-    </div>
+  <!-- ===== CATEGORY TABS ===== -->
+  <div class="l-categories">
+    <button class="l-cat active" data-cat="all">Semua</button>
+    <button class="l-cat" data-cat="slot">🎰 Slot</button>
+    <button class="l-cat" data-cat="arcade">🎮 Arcade</button>
   </div>
+
+  <!-- ===== GAME GRID ===== -->
+  <div class="l-grid" id="gameGrid"></div>
+
+  <!-- ===== BOTTOM NAV ===== -->
+  <nav class="l-bottom-nav">
+    <a href="/" class="l-nav-item active">
+      <span class="l-nav-icon">🏠</span>
+      <span class="l-nav-label">Home</span>
+    </a>
+    <a href="#" class="l-nav-item" id="navGames">
+      <span class="l-nav-icon">🎮</span>
+      <span class="l-nav-label">Games</span>
+    </a>
+    <a href="#" class="l-nav-item" id="navPromo">
+      <span class="l-nav-icon">🎁</span>
+      <span class="l-nav-label">Promo</span>
+    </a>
+    <a href="#" class="l-nav-item" id="navWallet">
+      <span class="l-nav-icon">💰</span>
+      <span class="l-nav-label">Wallet</span>
+    </a>
+    <a href="#" class="l-nav-item" id="navProfile">
+      <span class="l-nav-icon">👤</span>
+      <span class="l-nav-label">Profil</span>
+    </a>
+  </nav>
 </div>
 
-<!-- AUTH MODAL -->
-<div id="authModal" class="auth-modal" style="display:none">
-  <div class="auth-modal-content">
-    <button class="auth-modal-close" id="authModalClose">✕</button>
-    <div id="authModalBody">
-      <!-- Dynamic login/register forms -->
-    </div>
+<!-- ===== AUTH MODAL ===== -->
+<div id="authModal" class="l-modal" style="display:none">
+  <div class="l-modal-bg"></div>
+  <div class="l-modal-content">
+    <button class="l-modal-close" id="authModalClose">✕</button>
+    <div id="authModalBody"></div>
   </div>
 </div>
-
-<!-- TOAST -->
-<div id="toast" class="toast" style="display:none"></div>
 
 <script src="js/api.js"></script>
 <script src="js/ws.js"></script>

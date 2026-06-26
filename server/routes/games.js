@@ -17,6 +17,9 @@ router.get('/games', (req, res) => {
     category: g.category,
     description: g.description,
     thumbnail: g.thumbnail,
+    provider: g.provider || 'SlotCasino',
+    rtp: g.rtp || 97.0,
+    badge: g.badge || '',
     enabled: g.enabled,
     sortOrder: g.sortOrder,
     config: g.config ? {
@@ -39,6 +42,9 @@ router.get('/games/:gameId', (req, res) => {
     category: game.category,
     description: game.description,
     thumbnail: game.thumbnail,
+    provider: game.provider || 'SlotCasino',
+    rtp: game.rtp || 97.0,
+    badge: game.badge || '',
     enabled: game.enabled,
     config: game.config || {},
   });
@@ -63,6 +69,9 @@ router.get('/lobby', (req, res) => {
     category: g.category,
     description: g.description,
     thumbnail: g.thumbnail,
+    provider: g.provider || 'SlotCasino',
+    rtp: g.rtp || 97.0,
+    badge: g.badge || '',
   }));
   res.json({
     jackpot: jackpot.value,

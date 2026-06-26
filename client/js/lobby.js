@@ -1,69 +1,116 @@
 /**
- * Casino Lobby — Main entry page
+ * Premium Casino Lobby
  */
-document.addEventListener('DOMContentLoaded', async () => {
-  const el = id => document.getElementById(id);
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== HELPERS =====
+  const $ = id => document.getElementById(id);
+  const fmt = n => (n ?? 0).toLocaleString('id-ID');
+  const rupiah = n => 'Rp' + fmt(n);
 
-  const jackpotEl = el('lobbyJackpot');
-  const onlineEl = el('lobbyOnline');
-  const gridEl = el('gameGrid');
-  const authArea = el('lobbyAuthArea');
-  const profileArea = el('lobbyProfileArea');
-  const balanceEl = el('lobbyBalance');
-  const usernameEl = el('lobbyUsername');
-  const loginBtn = el('lobbyLoginBtn');
-  const registerBtn = el('lobbyRegisterBtn');
-  const logoutBtn = el('lobbyLogoutBtn');
-  const modal = el('authModal');
-  const modalBody = el('authModalBody');
-  const modalClose = el('authModalClose');
-  const bannerTrack = el('bannerTrack');
-  const bannerDots = el('bannerDots');
-  const toast = el('toast');
+  // ===== DOM CACHE =====
+  const jackpotVal = $('lJackpotVal');
+  const jackpotBar = $('lJackpotBar');
+  const onlineCount = $('lOnlineCount');
+  const totalGames = $('lTotalGames');
+  const guestArea = $('lGuestArea');
+  const userArea = $('lUserArea');
+  const balanceVal = $('lBalanceVal');
+  const avatar = $('lAvatar');
+  const loginBtn = $('lLoginBtn');
+  const registerBtn = $('lRegisterBtn');
+  const grid = $('gameGrid');
+  const modal = $('authModal');
+  const modalBody = $('authModalBody');
+  const modalClose = $('authModalClose');
+  const heroTrack = $('heroTrack');
+  const heroDots = $('heroDots');
+  const particles = $('particles');
 
-  let bannerIdx = 0;
-  let bannerTimer = null;
+  let heroIdx = 0;
+  let heroTimer = null;
+  let slides = [];
 
-  const fmt = n => 'Rp' + (n ?? 0).toLocaleString('id-ID');
-
-  // ===== TOAST =====
-  function showToast(msg, type) {
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.style.background = type === 'error' ? '#C62828' : type === 'success' ? '#2E7D32' : '#1a0020';
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  // ===== PARTICLES =====
+  function initParticles() {
+    if (!particles) return;
+    const count = 30;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'l-particle';
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const size = 1 + Math.random() * 3;
+      const delay = Math.random() * 5;
+      const dur = 3 + Math.random() * 4;
+      p.style.cssText = `left:${x}%;top:${y}%;width:${size}px;height:${size}px;animation-delay:${delay}s;animation-duration:${dur}s`;
+      particles.appendChild(p);
+    }
   }
 
-  // ===== AUTH CHECK =====
+  // ===== HERO BANNER =====
+  function initHero() {
+    slides = heroTrack?.querySelectorAll('.l-hero-slide');
+    if (!slides?.length) return;
+    heroDots.innerHTML = '';
+    for (let i = 0; i < slides.length; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'l-hero-dot' + (i === 0 ? ' active' : '');
+      dot.dataset.idx = i;
+      dot.addEventListener('click', () => goHero(i));
+      heroDots.appendChild(dot);
+    }
+    startHeroAuto();
+  }
+
+  function goHero(idx) {
+    if (!slides?.length) return;
+    heroIdx = idx;
+    heroTrack.style.transform = `translateX(-${idx * 100}%)`;
+    document.querySelectorAll('.l-hero-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    startHeroAuto();
+  }
+
+  function startHeroAuto() {
+    if (heroTimer) clearInterval(heroTimer);
+    heroTimer = setInterval(() => {
+      goHero((heroIdx + 1) % slides.length);
+    }, 5000);
+  }
+
+  // ===== AUTH =====
   async function checkAuth() {
     const user = await api.get('/api/user');
     if (!user.error && user.username) {
-      authArea.style.display = 'none';
-      profileArea.style.display = 'flex';
-      if (balanceEl) balanceEl.textContent = fmt(user.balance);
-      if (usernameEl) usernameEl.textContent = user.username;
+      guestArea.style.display = 'none';
+      userArea.style.display = 'flex';
+      balanceVal.textContent = fmt(user.balance);
       return user;
     }
-    authArea.style.display = 'flex';
-    profileArea.style.display = 'none';
+    guestArea.style.display = 'flex';
+    userArea.style.display = 'none';
     return null;
   }
 
-  // ===== AUTH MODAL =====
-  function showAuthModal(formType) {
+  function showAuthModal(type) {
     modal.style.display = 'flex';
-    if (formType === 'register') {
+    if (type === 'register') {
       modalBody.innerHTML = `
-        <div class="auth-card-compact">
-          <h2 class="auth-title">DAFTAR AKUN</h2>
+        <div class="l-auth-card">
+          <div class="l-auth-logo">🎰</div>
+          <h2 class="l-auth-title">Daftar Akun</h2>
           <form id="lRegForm">
-            <div class="form-group"><label>Username</label><input type="text" id="lRegUser" required minlength="3"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="lRegPass" required minlength="4"></div>
-            <div id="lRegError" class="form-error"></div>
-            <button type="submit" class="auth-btn">DAFTAR</button>
+            <div class="l-input-group">
+              <label>Username</label>
+              <input type="text" id="lRegUser" required minlength="3" placeholder="Buat username">
+            </div>
+            <div class="l-input-group">
+              <label>Password</label>
+              <input type="password" id="lRegPass" required minlength="4" placeholder="Buat password">
+            </div>
+            <div id="lRegError" class="l-form-err"></div>
+            <button type="submit" class="l-btn l-btn-gold l-btn-full">Daftar</button>
           </form>
-          <p class="auth-link">Sudah punya akun? <a href="#" id="lSwitchLogin">Masuk</a></p>
+          <p class="l-auth-link">Sudah punya akun? <a href="#" id="lSwitchLogin">Masuk</a></p>
         </div>`;
       document.getElementById('lRegForm').onsubmit = async (e) => {
         e.preventDefault();
@@ -73,21 +120,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (r.error) { document.getElementById('lRegError').textContent = r.error; return; }
         api.setToken(r.token);
         modal.style.display = 'none';
-        showToast('Registrasi berhasil! Selamat datang ' + u, 'success');
-        checkAuth();
+        showToast('🎉 Selamat datang ' + u + '!');
+        checkAuth(); loadLobbyData();
       };
       document.getElementById('lSwitchLogin').onclick = (e) => { e.preventDefault(); showAuthModal('login'); };
     } else {
       modalBody.innerHTML = `
-        <div class="auth-card-compact">
-          <h2 class="auth-title">MASUK</h2>
+        <div class="l-auth-card">
+          <div class="l-auth-logo">🎰</div>
+          <h2 class="l-auth-title">Masuk</h2>
           <form id="lLoginForm">
-            <div class="form-group"><label>Username</label><input type="text" id="lLoginUser" required></div>
-            <div class="form-group"><label>Password</label><input type="password" id="lLoginPass" required></div>
-            <div id="lLoginError" class="form-error"></div>
-            <button type="submit" class="auth-btn">MASUK</button>
+            <div class="l-input-group">
+              <label>Username</label>
+              <input type="text" id="lLoginUser" required placeholder="Masukkan username">
+            </div>
+            <div class="l-input-group">
+              <label>Password</label>
+              <input type="password" id="lLoginPass" required placeholder="Masukkan password">
+            </div>
+            <div id="lLoginError" class="l-form-err"></div>
+            <button type="submit" class="l-btn l-btn-gold l-btn-full">Masuk</button>
           </form>
-          <p class="auth-link">Belum punya akun? <a href="#" id="lSwitchRegister">Daftar</a></p>
+          <p class="l-auth-link">Belum punya akun? <a href="#" id="lSwitchRegister">Daftar</a></p>
         </div>`;
       document.getElementById('lLoginForm').onsubmit = async (e) => {
         e.preventDefault();
@@ -97,101 +151,83 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (r.error) { document.getElementById('lLoginError').textContent = r.error; return; }
         api.setToken(r.token);
         modal.style.display = 'none';
-        showToast('Selamat datang kembali, ' + u + '!', 'success');
-        checkAuth();
+        showToast('👋 Selamat datang kembali!');
+        checkAuth(); loadLobbyData();
       };
       document.getElementById('lSwitchRegister').onclick = (e) => { e.preventDefault(); showAuthModal('register'); };
     }
   }
 
-  loginBtn.onclick = () => showAuthModal('login');
-  registerBtn.onclick = () => showAuthModal('register');
-  modalClose.onclick = () => { modal.style.display = 'none'; };
-  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+  loginBtn?.addEventListener('click', () => showAuthModal('login'));
+  registerBtn?.addEventListener('click', () => showAuthModal('register'));
+  modalClose?.addEventListener('click', () => { modal.style.display = 'none'; });
+  modal?.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-  logoutBtn.onclick = () => {
-    api.clearToken();
-    showToast('Berhasil logout', 'success');
-    checkAuth();
-    location.reload();
-  };
-
-  // ===== BANNER CAROUSEL =====
-  let slides = [];
-  function initBanner() {
-    slides = bannerTrack?.querySelectorAll('.banner-slide');
-    if (!slides?.length) return;
-    const dotsContainer = bannerDots;
-    dotsContainer.innerHTML = '';
-    for (let i = 0; i < slides.length; i++) {
-      const dot = document.createElement('span');
-      dot.className = 'banner-dot' + (i === 0 ? ' active' : '');
-      dot.dataset.idx = i;
-      dot.onclick = () => goToBanner(i);
-      dotsContainer.appendChild(dot);
-    }
-    startBannerAuto();
-  }
-
-  function goToBanner(idx) {
-    if (!slides?.length) return;
-    bannerIdx = idx;
-    bannerTrack.style.transform = `translateX(-${idx * 100}%)`;
-    document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
-    startBannerAuto();
-  }
-
-  function startBannerAuto() {
-    if (bannerTimer) clearInterval(bannerTimer);
-    bannerTimer = setInterval(() => {
-      goToBanner((bannerIdx + 1) % slides.length);
-    }, 5000);
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'l-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    t.style.animation = 'toastIn 0.3s ease';
+    setTimeout(() => {
+      t.style.animation = 'toastOut 0.3s ease';
+      setTimeout(() => t.remove(), 300);
+    }, 2500);
   }
 
   // ===== GAME GRID =====
-  async function loadGames(category) {
+  async function loadGames(cat) {
     try {
       const data = await api.get('/api/games');
-      if (data.error) { gridEl.innerHTML = '<p>Gagal memuat game</p>'; return; }
+      if (data.error) { grid.innerHTML = '<div class="l-empty">Gagal memuat game</div>'; return; }
 
-      const filtered = category === 'all' ? data : data.filter(g => g.category === category);
-
+      const filtered = cat === 'all' ? data : data.filter(g => g.category === cat);
       if (filtered.length === 0) {
-        gridEl.innerHTML = '<p class="empty-cat">Tidak ada game di kategori ini</p>';
+        grid.innerHTML = '<div class="l-empty">Tidak ada game di kategori ini</div>';
         return;
       }
 
-      gridEl.innerHTML = filtered.map(g => `
-        <div class="game-card" data-game="${g.id}">
-          <div class="game-card-thumb ${g.category}-thumb">
-            <span class="game-card-icon">${g.category === 'slot' ? '🎰' : g.category === 'arcade' ? '🎮' : '🎯'}</span>
+      grid.innerHTML = filtered.map(g => {
+        const badge = g.badge ? `<span class="l-game-badge l-badge-${g.badge.toLowerCase()}">${g.badge}</span>` : '';
+        const minB = rupiah(g.config?.minBet || 10);
+        const maxB = rupiah(g.config?.maxBet || 10000);
+        return `
+        <div class="l-game" data-game="${g.id}">
+          <div class="l-game-thumb" style="background-image:url('${g.thumbnail || ''}')">
+            ${badge}
+            <div class="l-game-thumb-overlay">
+              <a href="/play/${g.id}" class="l-game-play-btn">Main</a>
+            </div>
           </div>
-          <div class="game-card-body">
-            <h3 class="game-card-name">${g.name}</h3>
-            <p class="game-card-desc">${g.description || ''}</p>
-            <span class="game-card-cat">${g.category}</span>
+          <div class="l-game-info">
+            <h3 class="l-game-name">${g.name}</h3>
+            <span class="l-game-provider">${g.provider || 'SlotCasino'}</span>
+            <div class="l-game-meta">
+              <span class="l-game-rtp">RTP ${g.rtp || 97}%</span>
+              <span class="l-game-bet">${minB} - ${maxB}</span>
+            </div>
           </div>
-          <div class="game-card-footer">
-            <span class="game-card-bet">${fmt(g.config?.minBet || 10)} - ${fmt(g.config?.maxBet || 10000)}</span>
-            <a href="/play/${g.id}" class="game-card-play">MAIN</a>
-          </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
 
-      // Add hover animation
-      document.querySelectorAll('.game-card').forEach(card => {
-        card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-4px)');
-        card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+      // Entrance animation
+      document.querySelectorAll('.l-game').forEach((card, i) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.4s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, i * 60);
       });
-    } catch (e) {
-      gridEl.innerHTML = '<p>Gagal memuat game</p>';
-    }
+    } catch { grid.innerHTML = '<div class="l-empty">Error loading games</div>'; }
   }
 
-  // ===== TABS =====
-  document.querySelectorAll('.lobby-tab').forEach(tab => {
+  // ===== CATEGORY TABS =====
+  document.querySelectorAll('.l-cat').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.lobby-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.l-cat').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       loadGames(tab.dataset.cat);
     });
@@ -202,28 +238,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const data = await api.get('/api/lobby');
       if (data.error) return;
-      if (jackpotEl) jackpotEl.textContent = '💰 ' + fmt(data.jackpot);
-      if (onlineEl) onlineEl.textContent = '👥 ' + (data.onlineCount || 0) + ' online';
+      const jp = rupiah(data.jackpot);
+      if (jackpotVal) jackpotVal.textContent = jp;
+      if (jackpotBar) jackpotBar.textContent = jp;
+      if (onlineCount) onlineCount.textContent = data.onlineCount || 0;
+      if (totalGames) totalGames.textContent = data.totalGames || 0;
     } catch {}
   }
 
   // ===== WEBSOCKET =====
   wsClient.on('jackpotChanged', (data) => {
-    if (jackpotEl) jackpotEl.textContent = '💰 ' + fmt(data.value);
+    const jp = rupiah(data.value);
+    if (jackpotVal) jackpotVal.textContent = jp;
+    if (jackpotBar) jackpotBar.textContent = jp;
   });
   wsClient.on('gamesUpdated', () => {
-    const activeTab = document.querySelector('.lobby-tab.active');
-    loadGames(activeTab?.dataset.cat || 'all');
+    const active = document.querySelector('.l-cat.active');
+    loadGames(active?.dataset.cat || 'all');
   });
-  wsClient.on('balanceChanged', (data) => {
-    checkAuth();
+  wsClient.on('balanceChanged', () => checkAuth());
+
+  // ===== BOTTOM NAV =====
+  // Wallet navigates to game page, Profile shows auth modal
+  document.getElementById('navWallet')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (api._token) window.location.href = '/play/classic777';
+    else showAuthModal('login');
+  });
+  document.getElementById('navProfile')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (api._token) window.location.href = '/play/classic777';
+    else showAuthModal('login');
+  });
+  document.getElementById('navPromo')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showToast('🎁 Promo akan segera hadir!');
+  });
+  document.getElementById('navGames')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('.l-grid')?.scrollIntoView({ behavior: 'smooth' });
   });
 
   // ===== INIT =====
+  initParticles();
+  initHero();
   checkAuth();
   loadLobbyData();
   loadGames('all');
-  initBanner();
 
+  // Refresh every 15s
   setInterval(loadLobbyData, 15000);
 });

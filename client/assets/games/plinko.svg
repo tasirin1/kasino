@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <defs>
+    <linearGradient id="bgPlinko" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00051a"/>
+      <stop offset="50%" style="stop-color:#001a4a"/>
+      <stop offset="100%" style="stop-color:#00051a"/>
+    </linearGradient>
+    <linearGradient id="goldPlinko" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FFFF"/>
+      <stop offset="100%" style="stop-color:#0088FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="180" fill="url(#bgPlinko)"/>
+  <rect x="10" y="10" width="300" height="160" rx="8" fill="none" stroke="url(#goldPlinko)" stroke-width="1" opacity="0.3"/>
+  <!-- Plinko board -->
+  <g fill="#D5AD6D" opacity="0.6">
+    <circle cx="60" cy="35" r="2.5"/><circle cx="100" cy="35" r="2.5"/>
+    <circle cx="140" cy="35" r="2.5"/><circle cx="180" cy="35" r="2.5"/>
+    <circle cx="220" cy="35" r="2.5"/><circle cx="260" cy="35" r="2.5"/>
+    <circle cx="80" cy="55" r="2.5"/><circle cx="120" cy="55" r="2.5"/>
+    <circle cx="160" cy="55" r="2.5"/><circle cx="200" cy="55" r="2.5"/>
+    <circle cx="240" cy="55" r="2.5"/>
+    <circle cx="60" cy="75" r="2.5"/><circle cx="100" cy="75" r="2.5"/>
+    <circle cx="140" cy="75" r="2.5"/><circle cx="180" cy="75" r="2.5"/>
+    <circle cx="220" cy="75" r="2.5"/><circle cx="260" cy="75" r="2.5"/>
+    <circle cx="80" cy="95" r="2.5"/><circle cx="120" cy="95" r="2.5"/>
+    <circle cx="160" cy="95" r="2.5"/><circle cx="200" cy="95" r="2.5"/>
+    <circle cx="240" cy="95" r="2.5"/>
+  </g>
+  <!-- Ball -->
+  <circle cx="160" cy="15" r="6" fill="#FFD700" opacity="0.9">
+    <animate attributeName="cy" from="15" to="115" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <!-- Multiplier slots -->
+  <g font-size="8" fill="#fff" text-anchor="middle" opacity="0.5">
+    <rect x="20" y="140" width="40" height="30" rx="3" fill="#FF6B6B" opacity="0.4"/>
+    <text x="40" y="158">100x</text>
+    <rect x="65" y="140" width="40" height="30" rx="3" fill="#FFD700" opacity="0.4"/>
+    <text x="85" y="158">26x</text>
+    <rect x="110" y="140" width="40" height="30" rx="3" fill="#4CAF50" opacity="0.4"/>
+    <text x="130" y="158">5x</text>
+    <rect x="155" y="140" width="40" height="30" rx="3" fill="#4CAF50" opacity="0.4"/>
+    <text x="175" y="158">2x</text>
+    <rect x="200" y="140" width="40" height="30" rx="3" fill="#FFD700" opacity="0.4"/>
+    <text x="220" y="158">26x</text>
+    <rect x="245" y="140" width="40" height="30" rx="3" fill="#FF6B6B" opacity="0.4"/>
+    <text x="265" y="158">100x</text>
+  </g>
+  <text x="160" y="175" text-anchor="middle" fill="url(#goldPlinko)" font-size="9" opacity="0.6">PLINKO</text>
+</svg>
