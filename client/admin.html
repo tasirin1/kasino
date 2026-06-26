@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>777 Kasino — Admin</title>
+<title>slotcasino tasirin — Admin</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="adminApp">
   <header class="admin-header">
-    <h1>🎰 Admin Panel</h1>
+    <h1>🎰 slotcasino tasirin — Admin</h1>
     <div class="admin-header-right">
       <span id="adminServerStatus" class="admin-status">● Live</span>
       <button id="adminLogout" class="admin-btn small">Logout</button>
@@ -51,6 +51,25 @@
     </div>
   </div>
 </div>
+
+  <!-- SETTINGS OVERLAY -->
+  <div id="settingsOverlay" class="settings-overlay" style="display:none">
+    <div class="settings-modal">
+      <h3 id="settingsTitle">Pengaturan Akun</h3>
+      <form id="settingsForm">
+        <div class="form-row"><label>Win Rate (override)</label><input type="number" id="sWinRate" class="admin-input" placeholder="Kosongkan = global" step="1" min="1" max="750"></div>
+        <div class="form-row"><label>Payout Mult (override)</label><input type="number" id="sPayoutMult" class="admin-input" placeholder="Kosongkan = global" step="1" min="10" max="500"></div>
+        <div class="form-row"><label>Min Bet (override)</label><input type="number" id="sMinBet" class="admin-input" placeholder="Kosongkan = global"></div>
+        <div class="form-row"><label>Max Bet (override)</label><input type="number" id="sMaxBet" class="admin-input" placeholder="Kosongkan = global"></div>
+        <div class="form-row"><label>Jackpot Rate (override)</label><input type="number" id="sJackpotRate" class="admin-input" placeholder="Kosongkan = global" step="0.1" min="0" max="100"></div>
+        <p id="sNote" style="color:#FF6B6B;font-size:12px"></p>
+        <div class="form-actions">
+          <button type="submit" class="admin-btn">Simpan</button>
+          <button type="button" id="settingsCancel" class="admin-btn small">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 <script src="js/api.js"></script>
 <script src="js/ws.js"></script>

@@ -24,8 +24,8 @@ router.post('/spin', authenticate, async (req, res) => {
 
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  const betAmount = parseInt(bet) || storage.getConfig().betAmount;
-  const config = storage.getConfig();
+  const config = storage.getEffectiveConfig(username);
+  const betAmount = parseInt(bet) || config.betAmount;
 
   if (betAmount < config.minBet || betAmount > config.maxBet) {
     return res.status(400).json({ error: `Bet must be between ${config.minBet} and ${config.maxBet}` });
@@ -98,6 +98,7 @@ router.get('/history', authenticate, (req, res) => {
 router.get('/user', authenticate, (req, res) => {
   const user = storage.findUser(req.user.username);
   if (!user) return res.status(404).json({ error: 'User not found' });
+  const settings = user.settings || {};
   res.json({
     id: user.id,
     username: user.username,
@@ -107,6 +108,7 @@ router.get('/user', authenticate, (req, res) => {
     totalWins: user.totalWins,
     totalBet: user.totalBet,
     totalPayout: user.totalPayout,
+    settings,
   });
 });
 

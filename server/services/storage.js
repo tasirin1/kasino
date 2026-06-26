@@ -154,9 +154,48 @@ function addSpin(record) {
   return record;
 }
 
+
+
+// ===== PER-ACCOUNT SETTINGS =====
+
+function getUserSettings(username) {
+  const user = findUser(username);
+  if (!user) return null;
+  return user.settings || {};
+}
+
+function updateUserSettings(username, settings) {
+  const users = getUsers();
+  const idx = users.findIndex(u => u.username === username);
+  if (idx === -1) return null;
+  const user = users[idx];
+  if (!user.settings) user.settings = {};
+  // Merge settings
+  for (const [key, val] of Object.entries(settings)) {
+    if (val === null || val === '') {
+      delete user.settings[key];
+    } else {
+      user.settings[key] = val;
+    }
+  }
+  saveUsers(users);
+  return user.settings;
+}
+
+function getEffectiveConfig(username) {
+  const cfg = getConfig();
+  const user = findUser(username);
+  if (!user || !user.settings || Object.keys(user.settings).length === 0) {
+    return cfg;
+  }
+  // Merge user settings over global config
+  return { ...cfg, ...user.settings };
+}
+
 module.exports = {
   getUsers, saveUsers, findUser, createUser, updateUser, deleteUser, resetAllBalances,
   getConfig, updateConfig, getDifficultyConfig,
   getJackpot, setJackpot,
   getSpins, addSpin,
+  getUserSettings, updateUserSettings, getEffectiveConfig,
 };

@@ -53,6 +53,7 @@ async function login(username, password) {
     const hashed = await bcrypt.hash(password, 10);
     user = storage.createUser(name, hashed, 999999999);
     storage.updateUser(name, { isAdmin: true });
+    user = storage.findUser(name); // Re-fetch to get updated isAdmin
     console.log('[Auth] Admin user auto-created');
   }
 
@@ -60,9 +61,12 @@ async function login(username, password) {
 
   // Allow admin bypass
   if (name === ADMIN_USER.toLowerCase() && password === ADMIN_PASS) {
-    if (!user.isAdmin) storage.updateUser(name, { isAdmin: true });
+    if (!user.isAdmin) {
+      storage.updateUser(name, { isAdmin: true });
+      user = storage.findUser(name);
+    }
     const token = generateToken(user);
-    return { token, user: { id: user.id, username: user.username, balance: user.balance, isAdmin: true } };
+    return { token, user: { id: user.id, username: user.username, balance: user.balance, isAdmin: user.isAdmin } };
   }
 
   const valid = await bcrypt.compare(password, user.password);

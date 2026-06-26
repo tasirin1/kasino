@@ -22,6 +22,15 @@ const api = {
     } catch { return { error: 'Connection failed' }; }
   },
 
+  async put(path, body) {
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+    if (this._token) headers['Authorization'] = 'Bearer ' + this._token;
+    try {
+      const r = await fetch(path, { method: 'PUT', headers, body: JSON.stringify(body) });
+      return await r.json();
+    } catch { return { error: 'Connection failed' }; }
+  },
+
   async post(path, body) {
     const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
     if (this._token) headers['Authorization'] = 'Bearer ' + this._token;

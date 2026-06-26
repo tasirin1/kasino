@@ -45,6 +45,7 @@ router.get('/users', (req, res) => {
     totalWins: u.totalWins || 0,
     totalBet: u.totalBet || 0,
     totalPayout: u.totalPayout || 0,
+    settings: u.settings || {},
   }));
   res.json(users);
 });
@@ -127,6 +128,44 @@ router.post('/jackpot', (req, res) => {
   const jp = storage.setJackpot(parseInt(value));
   ws.broadcastJackpot(jp.value);
   res.json(jp);
+});
+
+
+// Get user settings
+router.get('/users/:username/settings', (req, res) => {
+  const settings = storage.getUserSettings(req.params.username);
+  if (settings === null) return res.status(404).json({ error: 'User not found' });
+  res.json(settings);
+});
+
+// Update user settings (per-account overrides)
+router.put('/users/:username/settings', (req, res) => {
+  const { username } = req.params;
+  const user = storage.findUser(username);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  const updates = req.body;
+  const settings = storage.updateUserSettings(username, updates);
+  if (settings) {
+    // Broadcast settings change to this specific user
+    ws.broadcast({ type: 'settingsChanged', username: username, settings: settings });
+    res.json(settings);
+  } else {
+    res.status(500).json({ error: 'Update failed' });
+  }
+});
+
+// Reset specific user balance to starting money
+router.post('/users/:username/reset-balance', (req, res) => {
+  const { username } = req.params;
+  const config = storage.getConfig();
+  const updated = storage.updateUser(username, { balance: config.startingMoney });
+  if (updated) {
+    ws.broadcastBalance(username, updated.balance);
+    res.json({ username, balance: updated.balance });
+  } else {
+    res.status(404).json({ error: 'User not found' });
+  }
 });
 
 module.exports = router;

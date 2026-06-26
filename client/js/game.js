@@ -140,11 +140,19 @@ class GameManager {
     });
     wsClient.on('balanceChanged', (data) => {
       if (data.balance !== undefined && data.balance >= 0) {
-        this.state.balance = data.balance;
-        this._updateUI();
+        if (!data.player || data.player === this.state.username) {
+          this.state.balance = data.balance;
+          this._updateUI();
+        }
       }
     });
     wsClient.on('jackpotChanged', () => {});
+    wsClient.on('settingsChanged', (data) => {
+      if (data.username === this.state.username && data.settings) {
+        this.state.settings = data.settings;
+        this._updateUI();
+      }
+    });
 
     window.addEventListener('resize', () => {
       for (const r of this.reels) r.resize();
@@ -194,17 +202,21 @@ class GameManager {
     if (user.error) { window.location.href = 'login.html'; return; }
     this.state.balance = user.balance;
     this.state.username = user.username;
+    this.state.settings = user.settings || {};
     this._updateUI();
     this._showMsg('🎰 SPIN TO WIN');
   }
 
   _adjustBet(delta) {
-    this.state.bet = Math.max(10, Math.min(this.state.balance, this.state.bet + delta));
+    const s = this.state.settings || {};
+    const minB = s.minBet || 10;
+    const maxB = s.maxBet || Math.min(this.state.balance, 10000);
+    this.state.bet = Math.max(minB, Math.min(maxB, this.state.bet + delta));
     this._updateUI();
   }
 
   _updateUI() {
-    const f = n => (n ?? 0).toLocaleString('id-ID');
+    const f = n => "Rp" + (n ?? 0).toLocaleString("id-ID");
     if (this.el.balanceDisplay) this.el.balanceDisplay.textContent = f(this.state.balance);
     if (this.el.betDisplay) this.el.betDisplay.textContent = f(this.state.bet);
     if (this.el.betDisplay2) this.el.betDisplay2.textContent = f(this.state.bet);
@@ -262,9 +274,9 @@ class GameManager {
 
       // Show win
       if (result.win && result.payout > 0) {
-        this._showMsg(`🎉 WIN ${result.payout.toLocaleString('id-ID')}!`, '#FF6B6B');
+        this._showMsg(`🎉 WIN Rp${result.payout.toLocaleString("id-ID")}!`, '#FF6B6B');
         if (this.el.winDisplay) {
-          this.el.winDisplay.textContent = result.payout.toLocaleString('id-ID');
+          this.el.winDisplay.textContent = "Rp" + result.payout.toLocaleString("id-ID");
           this.el.winDisplay.classList.add('flash');
           setTimeout(() => this.el.winDisplay.classList.remove('flash'), 900);
         }
