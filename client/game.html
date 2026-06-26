@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>slotcasino tasirin — Game</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="gameApp">
+  <!-- TOP BAR -->
+  <header id="gameTopBar">
+    <div class="g-left">
+      <button id="backToLobby" class="g-back">← Kembali</button>
+    </div>
+    <div class="g-center">
+      <span id="gameTitle" class="g-title">Game</span>
+    </div>
+    <div class="g-right">
+      <div class="g-user" id="gUserArea">
+        <span id="gBalance" class="g-balance">Rp0</span>
+        <span id="gUsername" class="g-username"></span>
+      </div>
+      <div class="g-auth" id="gAuthArea">
+        <button id="gLoginBtn" class="g-btn tiny">Masuk</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- GAME CONTAINER -->
+  <div id="gameContainer" class="game-container">
+    <div id="gameCanvas" class="game-canvas">
+      <!-- Game module renders here -->
+    </div>
+  </div>
+
+  <!-- AUTH MODAL (same as lobby) -->
+  <div id="gameAuthModal" class="auth-modal" style="display:none">
+    <div class="auth-modal-content">
+      <button class="auth-modal-close" id="gameAuthModalClose">✕</button>
+      <div id="gameAuthModalBody"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="gameToast" class="toast" style="display:none"></div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ws.js"></script>
+<script src="js/game-loader.js"></script>
+</body>
+</html>

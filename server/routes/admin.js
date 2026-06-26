@@ -168,4 +168,79 @@ router.post('/users/:username/reset-balance', (req, res) => {
   }
 });
 
+
+// ===== GAMES MANAGEMENT =====
+
+// Get all games (with full config, includes disabled)
+router.get('/games', (req, res) => {
+  const { getGames } = require('../services/games');
+  res.json(getGames());
+});
+
+// Create new game
+router.post('/games', (req, res) => {
+  const { createGame } = require('../services/games');
+  const game = createGame(req.body);
+  if (!game) return res.status(400).json({ error: 'Game ID already exists' });
+  ws.broadcast({ type: 'gamesUpdated' });
+  res.json(game);
+});
+
+// Update game meta (name, category, thumbnail, etc.)
+router.put('/games/:gameId', (req, res) => {
+  const { updateGameMeta, getGame } = require('../services/games');
+  const game = getGame(req.params.gameId);
+  if (!game) return res.status(404).json({ error: 'Game not found' });
+  const updated = updateGameMeta(req.params.gameId, req.body);
+  ws.broadcast({ type: 'gamesUpdated' });
+  res.json(updated);
+});
+
+// Update game config (winRate, payout, etc.)
+router.put('/games/:gameId/config', (req, res) => {
+  const { updateGameConfig, getGame } = require('../services/games');
+  const game = getGame(req.params.gameId);
+  if (!game) return res.status(404).json({ error: 'Game not found' });
+  const updated = updateGameConfig(req.params.gameId, req.body);
+  ws.broadcast({ type: 'gameConfigChanged', gameId: req.params.gameId, config: req.body });
+  res.json(updated);
+});
+
+// Toggle game enabled/disabled
+router.post('/games/:gameId/toggle', (req, res) => {
+  const { toggleGame, getGame } = require('../services/games');
+  const game = getGame(req.params.gameId);
+  if (!game) return res.status(404).json({ error: 'Game not found' });
+  const enabled = req.body.enabled !== undefined ? req.body.enabled : !game.enabled;
+  const updated = toggleGame(req.params.gameId, enabled);
+  ws.broadcast({ type: 'gamesUpdated' });
+  res.json(updated);
+});
+
+// Delete game
+router.delete('/games/:gameId', (req, res) => {
+  const { deleteGame } = require('../services/games');
+  const deleted = deleteGame(req.params.gameId);
+  ws.broadcast({ type: 'gamesUpdated' });
+  res.json({ deleted });
+});
+
+// Update per-account game settings
+router.put('/users/:username/game-settings/:gameId', (req, res) => {
+  const { username, gameId } = req.params;
+  const user = require('../services/storage').findUser(username);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  const settings = req.body;
+  const users = require('../services/storage').getUsers();
+  const idx = users.findIndex(u => u.username === username);
+  if (idx === -1) return res.status(404).json({ error: 'User not found' });
+  if (!users[idx].settings) users[idx].settings = {};
+  if (!users[idx].settings.games) users[idx].settings.games = {};
+  users[idx].settings.games[gameId] = { ...(users[idx].settings.games[gameId] || {}), ...settings };
+  require('../services/storage').saveUsers(users);
+  ws.broadcast({ type: 'settingsChanged', username, settings: users[idx].settings });
+  res.json(users[idx].settings.games[gameId]);
+});
+
 module.exports = router;

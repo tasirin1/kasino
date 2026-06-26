@@ -36,7 +36,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const res = await api.post('/api/register', { username: user, password: pass });
   if (res.error) { err.textContent = res.error; return; }
   api.setToken(res.token);
-  window.location.href = res.user.isAdmin ? 'admin.html' : 'index.html';
+  window.location.href = res.user.isAdmin ? 'admin.html' : '/';
 });
 </script>
 </body>

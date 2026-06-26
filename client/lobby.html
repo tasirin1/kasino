@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>slotcasino tasirin — Lobby</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="lobbyApp">
+  <!-- TOP BAR -->
+  <header id="lobbyTop">
+    <div class="lobby-logo">
+      <span class="lobby-logo-icon">🎰</span>
+      <span class="lobby-logo-text">slotcasino tasirin</span>
+    </div>
+    <div class="lobby-top-right">
+      <div id="lobbyJackpot" class="lobby-jackpot">💰 Rp0</div>
+      <div id="lobbyOnline" class="lobby-online">👥 0 online</div>
+      <div id="lobbyAuthArea">
+        <button id="lobbyLoginBtn" class="lobby-btn outline">Masuk</button>
+        <button id="lobbyRegisterBtn" class="lobby-btn">Daftar</button>
+      </div>
+      <div id="lobbyProfileArea" style="display:none">
+        <span id="lobbyBalance" class="lobby-balance">Rp0</span>
+        <span id="lobbyUsername" class="lobby-username"></span>
+        <button id="lobbyLogoutBtn" class="lobby-btn tiny">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNER CAROUSEL -->
+  <div id="bannerCarousel" class="banner-carousel">
+    <div class="banner-track" id="bannerTrack">
+      <div class="banner-slide" style="background:linear-gradient(135deg,#6a0010,#cc0033,#6a0010)">
+        <div class="banner-content">
+          <h2>🔥 Classic 777</h2>
+          <p>Jackpot hingga Rp500 Juta!</p>
+          <a href="/play/classic777" class="banner-btn">MAIN SEKARANG</a>
+        </div>
+      </div>
+      <div class="banner-slide" style="background:linear-gradient(135deg,#003366,#0099FF,#003366)">
+        <div class="banner-content">
+          <h2>💎 Lucky Fruits</h2>
+          <p>Buah-buahan keberuntungan!</p>
+          <a href="/play/luckyfruits" class="banner-btn">MAIN SEKARANG</a>
+        </div>
+      </div>
+      <div class="banner-slide" style="background:linear-gradient(135deg,#1a0030,#6600CC,#1a0030)">
+        <div class="banner-content">
+          <h2>📉 Plinko</h2>
+          <p>Multiplier hingga 1000x!</p>
+          <a href="/play/plinko" class="banner-btn">MAIN SEKARANG</a>
+        </div>
+      </div>
+    </div>
+    <div class="banner-dots" id="bannerDots"></div>
+  </div>
+
+  <!-- GAME CATEGORIES -->
+  <div id="lobbyContent">
+    <div class="lobby-tabs">
+      <button class="lobby-tab active" data-cat="all">Semua</button>
+      <button class="lobby-tab" data-cat="slot">🎰 Slot</button>
+      <button class="lobby-tab" data-cat="arcade">🎮 Arcade</button>
+    </div>
+
+    <div id="gameGrid" class="game-grid">
+      <!-- Games rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="auth-modal" style="display:none">
+  <div class="auth-modal-content">
+    <button class="auth-modal-close" id="authModalClose">✕</button>
+    <div id="authModalBody">
+      <!-- Dynamic login/register forms -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" style="display:none"></div>
+
+<script src="js/api.js"></script>
+<script src="js/ws.js"></script>
+<script src="js/lobby.js"></script>
+</body>
+</html>
