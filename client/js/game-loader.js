@@ -13,10 +13,20 @@
 
   let currentGame = null;
 
+  // Show error in game container
+  function showError(title, msg) {
+    if (!container) return;
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(180,160,220,0.6)">' +
+      '<h2 style="color:#FF6B6B;font-size:16px;margin-bottom:8px">' + title + '</h2>' +
+      '<p style="font-size:12px;margin-bottom:12px">' + msg + '</p>' +
+      '<a href="/" style="display:inline-block;padding:6px 14px;background:linear-gradient(180deg,#D5AD6D,#B8860B);color:#1a0020;border-radius:6px;text-decoration:none;font-size:12px;font-weight:700">Kembali ke Lobby</a></div>';
+  }
+
   // Auth modal
   function showAuthModal(formType) {
     const modal = document.getElementById('gameAuthModal');
     const body = document.getElementById('gameAuthModalBody');
+    if (!modal || !body) return;
     modal.style.display = 'flex';
     if (formType === 'register') {
       body.innerHTML = `
@@ -30,18 +40,21 @@
           </form>
           <p class="auth-link">Sudah punya akun? <a href="#" id="gSwitchLogin">Masuk</a></p>
         </div>`;
-      document.getElementById('gRegForm').onsubmit = async (e) => {
+      const form = document.getElementById('gRegForm');
+      if (form) form.onsubmit = async (e) => {
         e.preventDefault();
-        const u = document.getElementById('gRegUser').value.trim();
-        const p = document.getElementById('gRegPass').value;
+        const u = document.getElementById('gRegUser')?.value?.trim();
+        const p = document.getElementById('gRegPass')?.value;
+        if (!u || !p) { document.getElementById('gRegError').textContent = 'Isi semua field'; return; }
         const r = await api.post('/api/register', { username: u, password: p });
-        if (r.error) { document.getElementById('gRegError').textContent = r.error; return; }
+        if (r.error) { const err = document.getElementById('gRegError'); if (err) err.textContent = r.error; return; }
         api.setToken(r.token);
         modal.style.display = 'none';
         _updateAuthUI(r.user);
         if (currentGame && currentGame._loadUser) currentGame._loadUser();
       };
-      document.getElementById('gSwitchLogin').onclick = (e) => { e.preventDefault(); showAuthModal('login'); };
+      const sw = document.getElementById('gSwitchLogin');
+      if (sw) sw.onclick = (e) => { e.preventDefault(); showAuthModal('login'); };
     } else {
       body.innerHTML = `
         <div class="auth-card-compact">
@@ -54,26 +67,32 @@
           </form>
           <p class="auth-link">Belum punya akun? <a href="#" id="gSwitchRegister">Daftar</a></p>
         </div>`;
-      document.getElementById('gLoginForm').onsubmit = async (e) => {
+      const form = document.getElementById('gLoginForm');
+      if (form) form.onsubmit = async (e) => {
         e.preventDefault();
-        const u = document.getElementById('gLoginUser').value.trim();
-        const p = document.getElementById('gLoginPass').value;
+        const u = document.getElementById('gLoginUser')?.value?.trim();
+        const p = document.getElementById('gLoginPass')?.value;
+        if (!u || !p) { document.getElementById('gLoginError').textContent = 'Isi semua field'; return; }
         const r = await api.post('/api/login', { username: u, password: p });
-        if (r.error) { document.getElementById('gLoginError').textContent = r.error; return; }
+        if (r.error) { const err = document.getElementById('gLoginError'); if (err) err.textContent = r.error; return; }
         api.setToken(r.token);
         modal.style.display = 'none';
         _updateAuthUI(r.user);
         if (currentGame && currentGame._loadUser) currentGame._loadUser();
       };
-      document.getElementById('gSwitchRegister').onclick = (e) => { e.preventDefault(); showAuthModal('register'); };
+      const sw = document.getElementById('gSwitchRegister');
+      if (sw) sw.onclick = (e) => { e.preventDefault(); showAuthModal('register'); };
     }
   }
 
-  document.getElementById('gameAuthModalClose').onclick = () => {
-    document.getElementById('gameAuthModal').style.display = 'none';
+  const modalClose = document.getElementById('gameAuthModalClose');
+  if (modalClose) modalClose.onclick = () => {
+    const modal = document.getElementById('gameAuthModal');
+    if (modal) modal.style.display = 'none';
   };
 
   function _updateAuthUI(user) {
+    if (!gAuthArea || !gUserArea) return;
     if (user && user.username) {
       gAuthArea.style.display = 'none';
       gUserArea.style.display = 'flex';
@@ -85,90 +104,109 @@
     }
   }
 
-  // Load game config
+  // Load game module
   async function loadGameModule() {
-    container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Memuat game...</p></div>';
-
     try {
-      // Get game info
+      if (!container) { console.error('[GameLoader] No container'); return; }
+      container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:rgba(180,160,220,0.5)"><div class="spinner"></div><p style="font-size:13px">Memuat game...</p></div>';
+
+      // 1. Get game info
       const gameInfo = await api.get('/api/games/' + gameId);
       if (gameInfo.error || !gameInfo.enabled) {
-        container.innerHTML = `<div class="error-page"><h2>Game tidak tersedia</h2><p>${gameInfo.error || 'Game dinonaktifkan'}</p><a href="/" class="lobby-btn">Kembali ke Lobby</a></div>`;
+        showError(gameInfo.error || 'Game tidak tersedia', 'Game tidak ditemukan atau dinonaktifkan');
+        return;
+      }
+      if (gTitle) gTitle.textContent = gameInfo.name;
+
+      // 2. Check auth status
+      const user = await api.get('/api/user');
+      if (!user.error && user.username) _updateAuthUI(user);
+
+      // 3. Load game script
+      const module = await loadScript(gameId);
+      if (!module) {
+        showError('Module not found', 'Game module ' + gameId + ' tidak ditemukan');
         return;
       }
 
-      if (gTitle) gTitle.textContent = gameInfo.name;
-
-      // Check auth status
-      const user = await api.get('/api/user');
-      if (!user.error && user.username) {
-        _updateAuthUI(user);
+      // 4. Get effective config
+      let config = gameInfo.config || {};
+      if (user && !user.error && user.username) {
+        try {
+          const effConfig = await api.get('/api/games/' + gameId + '/config');
+          if (effConfig && !effConfig.error) config = effConfig;
+        } catch(e) { console.warn('[GameLoader] Config fetch failed, using default'); }
       }
 
-      // Load game script dynamically
-      const script = document.createElement('script');
-      script.src = `/games/${gameId}/index.js`;
-      script.onload = async () => {
-        try {
-        const module = window.__gameModules?.[gameId];
-        if (!module) {
-          container.innerHTML = `<div class="error-page"><h2>Module not found</h2><p>Game module ${gameId} tidak ditemukan</p></div>`;
-          return;
-        }
+      // 5. Init game module
+      currentGame = module;
+      try {
+        container.innerHTML = '';
+        await module.init(container, config);
+      } catch (e) {
+        console.error('[GameLoader] Init error:', e);
+        showError('Gagal memulai game', e.message || 'Terjadi error saat inisialisasi');
+        return;
+      }
 
-        // Get effective config
-        let config = gameInfo.config || {};
-        if (user && !user.error && user.username) {
-          const effConfig = await api.get(`/api/games/${gameId}/config`);
-          if (effConfig && !effConfig.error) config = effConfig;
-        }
-
-        currentGame = module;
-        try {
-          await module.init(container, config);
-        } catch (e) {
-          console.error('[GameLoader] Module init error:', e);
-          container.innerHTML = '<div class="error-page"><h2>Error init game</h2><p>' + (e.message || 'Unknown error') + '</p><a href="/" class="lobby-btn">Kembali ke Lobby</a></div>';
-          return;
-        }
-
-        // Update balance periodically if logged in
-        if (api._token) {
-          setInterval(async () => {
-            if (currentGame && currentGame._loadUser) currentGame._loadUser();
-          }, 10000);
-        }
-      };
-      script.onerror = () => {
-        container.innerHTML = `<div class="error-page"><h2>Error loading game</h2><p>Gagal memuat modul game</p></div>`;
-        } catch (e) {
-          console.error('[GameLoader] Script onload error:', e);
-          container.innerHTML = '<div class="error-page"><h2>Error</h2><p>' + (e.message || 'Unknown error') + '</p></div>';
-        }
-      };
-      document.body.appendChild(script);
-
+      // 6. Periodic balance update
+      if (api._token) {
+        setInterval(async () => {
+          if (currentGame && currentGame._loadUser) currentGame._loadUser();
+        }, 10000);
+      }
     } catch (e) {
-      console.error('[GameLoader]', e);
-      container.innerHTML = `<div class="error-page"><h2>Error</h2><p>Gagal memuat game</p></div>`;
+      console.error('[GameLoader] Fatal:', e);
+      showError('Fatal Error', e.message || 'Terjadi error yang tidak diketahui');
     }
   }
 
+  // Load game script dynamically, returns module or null
+  function loadScript(gameId) {
+    return new Promise((resolve) => {
+      try {
+        // Check if already loaded
+        if (window.__gameModules && window.__gameModules[gameId]) {
+          resolve(window.__gameModules[gameId]);
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = '/games/' + gameId + '/index.js';
+        script.onload = () => {
+          const mod = window.__gameModules ? window.__gameModules[gameId] : null;
+          resolve(mod);
+        };
+        script.onerror = () => {
+          console.error('[GameLoader] Script load failed:', gameId);
+          resolve(null);
+        };
+        document.body.appendChild(script);
+      } catch (e) {
+        console.error('[GameLoader] Script error:', e);
+        resolve(null);
+      }
+    });
+  }
+
   // Back to lobby
-  document.getElementById('backToLobby')?.addEventListener('click', () => {
+  const backBtn = document.getElementById('backToLobby');
+  if (backBtn) backBtn.addEventListener('click', () => {
     if (currentGame && currentGame.destroy) currentGame.destroy();
     window.location.href = '/';
   });
 
   // Login button
-  document.getElementById('gLoginBtn')?.addEventListener('click', () => showAuthModal('login'));
+  const loginBtn = document.getElementById('gLoginBtn');
+  if (loginBtn) loginBtn.addEventListener('click', () => showAuthModal('login'));
 
   // WebSocket balance updates
   wsClient.on('balanceChanged', (data) => {
-    if (data.player === api._token?.username) {
-      if (currentGame && currentGame._loadUser) currentGame._loadUser();
+    if (currentGame && currentGame._loadUser) {
+      currentGame._loadUser();
     }
   });
 
+  // Start
   loadGameModule();
 })();
