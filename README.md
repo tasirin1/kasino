@@ -501,6 +501,68 @@ kasino/
 
 ---
 
+
+## 🗄️ Database Setup (PostgreSQL)
+
+Aplikasi mendukung dua mode penyimpanan:
+
+### Mode 1: JSON Files (Default — Tanpa Database)
+Tanpa konfigurasi tambahan, aplikasi menggunakan file JSON di folder `data/`.
+Cocok untuk development, testing, atau penggunaan lokal.
+
+### Mode 2: PostgreSQL (Production — Koyeb / VPS)
+
+#### 1. Set Environment Variable
+```
+DATABASE_URL=postgresql://user:password@host:5432/kasino
+```
+
+#### 2. Jalankan Migration
+```bash
+npm run migrate
+```
+
+#### 3. Seed Data Awal
+```bash
+npm run seed
+```
+
+Atau sekaligus:
+```bash
+npm run db:setup
+```
+
+#### 4. Jalankan Aplikasi
+```bash
+npm start
+```
+
+Aplikasi akan **otomatis mendeteksi** `DATABASE_URL`:
+- Jika ada → menggunakan PostgreSQL via node-postgres (`pg`)
+- Jika tidak ada → menggunakan file JSON seperti biasa
+
+### Struktur Database
+
+Lihat `prisma/schema.prisma` untuk detail schema database.
+Query database menggunakan `pg` (node-postgres) dengan raw SQL.
+
+Tabel utama:
+- `User` — Akun pemain dan admin
+- `UserSettings` — Pengaturan per-akun (tema, bahasa, override game)
+- `UserSession` — Sesi login
+- `Spin` — Riwayat permainan
+- `Config` — Pengaturan global game
+- `Game` — Daftar game
+- `GameConfig` — Pengaturan per-game
+- `AuditLog` — Log aktivitas admin
+
+### Catatan Penting
+- **Tidak perlu mengubah kode** untuk beralih antara JSON dan database
+- Cukup set atau hapus `DATABASE_URL` di environment variables
+- Semua endpoint API tetap sama
+- Semua data JSON akan diabaikan setelah database aktif
+- Untuk migrasi data dari JSON ke database, hubungi developer
+
 ## Catatan untuk Developer AI
 
 Proyek ini memiliki arsitektur yang bersih dan modular. Jika Anda adalah AI yang ditugaskan mengembangkan proyek ini:

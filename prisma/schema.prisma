@@ -1,0 +1,112 @@
+generator client {
+  provider        = "prisma-client-js"
+  engineType      = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  username       String   @unique
+  password       String
+  balance        BigInt   @default(10000)
+  isAdmin        Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  totalSpins     Int      @default(0)
+  totalWins      Int      @default(0)
+  totalBet       BigInt   @default(0)
+  totalPayout    BigInt   @default(0)
+  settings       UserSettings?
+  sessions       UserSession[]
+  spins          Spin[]
+}
+
+model UserSettings {
+  id               String  @id @default(cuid())
+  userId           String  @unique
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme            String  @default("dark")
+  language         String  @default("id")
+  notifications    Boolean @default(true)
+  winRate          Float?
+  payoutMultiplier Float?
+  minBet           BigInt?
+  maxBet           BigInt?
+  jackpotHitRate   Float?
+}
+
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  device    String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model Spin {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username  String
+  bet       BigInt
+  payout    BigInt   @default(0)
+  gameId    String
+  grid      Json?
+  timestamp DateTime @default(now())
+}
+
+model Config {
+  id                String  @id @default("global")
+  difficulty        String  @default("medium")
+  winRate           Float   @default(0.15)
+  payoutMultiplier  Float   @default(3.0)
+  minSpinsBeforeWin Int     @default(10)
+  jackpotHitRate    Float   @default(0.005)
+  jackpot           BigInt  @default(5000000)
+  startingMoney     BigInt  @default(10000)
+  minBet            BigInt  @default(10)
+  maxBet            BigInt  @default(10000)
+  betAmount         BigInt  @default(100)
+}
+
+model Game {
+  id          String       @id
+  name        String
+  category    String       @default("slot")
+  description String       @default("")
+  provider    String       @default("SlotCasino")
+  rtp         Float        @default(97.0)
+  thumbnail   String       @default("")
+  badge       String       @default("")
+  enabled     Boolean      @default(true)
+  sortOrder   Int          @default(0)
+  config      GameConfig?
+}
+
+model GameConfig {
+  id                String  @id @default(cuid())
+  gameId            String  @unique
+  game              Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  winRate           Float   @default(0.25)
+  payoutMultiplier  Float   @default(3.0)
+  minBet            BigInt  @default(10)
+  maxBet            BigInt  @default(10000)
+  jackpotHitRate    Float   @default(0.005)
+  maxWin            BigInt  @default(1000000)
+  maxMultiplier     Float   @default(500)
+  riskLevels        Json?
+  defaultRisk       String  @default("medium")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  username  String
+  detail    String   @default("")
+  ip        String   @default("")
+  timestamp DateTime @default(now())
+}

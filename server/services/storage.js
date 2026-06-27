@@ -339,13 +339,36 @@ function getFullProfile(username) {
 }
 
 // Re-export all added functions
-module.exports = {
-  getUsers, saveUsers, findUser, createUser, updateUser, deleteUser, resetAllBalances,
-  getConfig, updateConfig, getDifficultyConfig,
-  getJackpot, setJackpot,
-  getSpins, addSpin,
-  getUserSettings, updateUserSettings, getEffectiveConfig,
-  getUserSessions, addUserSession, removeUserSession, removeAllUserSessions,
-  updateUserTheme, updateUserLanguage, updateUserNotifications,
-  resetUserStats, getFullProfile,
-};
+// ===== AUTO-SELECT: Database or JSON =====
+let storageExports;
+
+if (process.env.DATABASE_URL) {
+  try {
+    // Check if pg module is available
+    require.resolve('pg');
+    const dbStorage = require('./db-storage');
+    storageExports = dbStorage;
+    console.log('[Storage] Using PostgreSQL database');
+  } catch (e) {
+    console.warn('[Storage] DATABASE_URL set but pg module not found. Install with: npm install pg');
+    console.warn('[Storage] Falling back to JSON files');
+    // Fall through to JSON
+  }
+}
+
+if (!storageExports) {
+  // Use JSON file backend
+  storageExports = {
+    getUsers, saveUsers, findUser, createUser, updateUser, deleteUser, resetAllBalances,
+    getConfig, updateConfig, getDifficultyConfig,
+    getJackpot, setJackpot,
+    getSpins, addSpin,
+    getUserSettings, updateUserSettings, getEffectiveConfig,
+    getUserSessions, addUserSession, removeUserSession, removeAllUserSessions,
+    updateUserTheme, updateUserLanguage, updateUserNotifications,
+    resetUserStats, getFullProfile,
+  };
+  console.log('[Storage] Using JSON files (no DATABASE_URL)');
+}
+
+module.exports = storageExports;
