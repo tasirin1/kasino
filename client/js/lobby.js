@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = await api.post('/api/register', { username: u, password: p });
         if (r.error) { document.getElementById('lRegError').textContent = r.error; return; }
         api.setToken(r.token);
+        if (r.user && r.user.isAdmin) { window.location.href = '/admin.html'; return; }
         modal.style.display = 'none';
         showToast('🎉 Selamat datang ' + u + '!');
         checkAuth(); loadLobbyData();
@@ -150,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = await api.post('/api/login', { username: u, password: p });
         if (r.error) { document.getElementById('lLoginError').textContent = r.error; return; }
         api.setToken(r.token);
+        if (r.user && r.user.isAdmin) { window.location.href = '/admin.html'; return; }
         modal.style.display = 'none';
         showToast('👋 Selamat datang kembali!');
         checkAuth(); loadLobbyData();
@@ -332,13 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== COMING SOON MODAL =====
   function showComingSoonModal() {
     modal.style.display = 'flex';
-    modalBody.innerHTML = \`
+    modalBody.innerHTML = `
       <div class="l-auth-card" style="text-align:center">
         <div style="font-size:48px;margin-bottom:8px">🎁</div>
         <h2 class="l-auth-title" style="font-size:16px">PROMO</h2>
         <p style="color:rgba(180,160,220,0.5);font-size:12px;margin:12px 0">Fitur promo akan segera hadir! Nantikan bonus dan event spesial.</p>
         <button class="l-btn l-btn-gold l-btn-full" onclick="document.getElementById('authModal').style.display='none'">Tutup</button>
-      </div>\`;
+      </div>`;
   }
 
   // ===== INIT =====

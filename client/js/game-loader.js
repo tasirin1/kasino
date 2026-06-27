@@ -61,6 +61,7 @@
         const r = await api.post('/api/register', { username: u, password: p });
         if (r.error) { const err = document.getElementById('gRegError'); if (err) err.textContent = r.error; return; }
         api.setToken(r.token);
+        if (r.user && r.user.isAdmin) { window.location.href = '/admin.html'; return; }
         modal.style.display = 'none';
         _updateAuthUI(r.user);
         if (currentGame && currentGame._loadUser) currentGame._loadUser();
@@ -88,6 +89,7 @@
         const r = await api.post('/api/login', { username: u, password: p });
         if (r.error) { const err = document.getElementById('gLoginError'); if (err) err.textContent = r.error; return; }
         api.setToken(r.token);
+        if (r.user && r.user.isAdmin) { window.location.href = '/admin.html'; return; }
         modal.style.display = 'none';
         _updateAuthUI(r.user);
         if (currentGame && currentGame._loadUser) currentGame._loadUser();

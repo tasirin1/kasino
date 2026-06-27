@@ -199,3 +199,105 @@ module.exports = {
   getSpins, addSpin,
   getUserSettings, updateUserSettings, getEffectiveConfig,
 };
+
+// ===== SESSIONS =====
+const SESSIONS_FILE = 'sessions.json';
+
+function getUserSessions(username) {
+  const all = read(SESSIONS_FILE) || [];
+  return all.filter(s => s.username === username);
+}
+
+function addUserSession(username, token, device) {
+  const all = read(SESSIONS_FILE) || [];
+  all.push({
+    username,
+    token,
+    device: device || 'unknown',
+    createdAt: new Date().toISOString()
+  });
+  write(SESSIONS_FILE, all);
+}
+
+function removeUserSession(username, token) {
+  const all = read(SESSIONS_FILE) || [];
+  const filtered = all.filter(s => !(s.username === username && s.token === token));
+  write(SESSIONS_FILE, filtered);
+}
+
+function removeAllUserSessions(username) {
+  const all = read(SESSIONS_FILE) || [];
+  const filtered = all.filter(s => s.username !== username);
+  write(SESSIONS_FILE, filtered);
+}
+
+// ===== PROFILE SETTINGS =====
+function updateUserTheme(username, theme) {
+  return updateUserSettings(username, { theme });
+}
+
+function updateUserLanguage(username, lang) {
+  return updateUserSettings(username, { language: lang });
+}
+
+function updateUserNotifications(username, notif) {
+  const user = findUser(username);
+  if (!user) return null;
+  if (!user.settings) user.settings = {};
+  if (!user.settings.notifications) user.settings.notifications = {};
+  Object.assign(user.settings.notifications, notif);
+  return updateUser(username, { settings: user.settings });
+}
+
+// ===== RESET STATS =====
+function resetUserStats(username) {
+  const user = findUser(username);
+  if (!user) return null;
+  return updateUser(username, {
+    totalSpins: 0,
+    totalWins: 0,
+    totalBet: 0,
+    totalPayout: 0,
+  });
+}
+
+// ===== GET FULL PROFILE =====
+function getFullProfile(username) {
+  const user = findUser(username);
+  if (!user) return null;
+  const spins = getSpins(user.id, 1000);
+  const wins = spins.filter(s => s.payout > 0);
+  const totalSpins = user.totalSpins || 0;
+  const totalWins = user.totalWins || 0;
+  const losses = totalSpins - totalWins;
+  const winRate = totalSpins > 0 ? ((totalWins / totalSpins) * 100).toFixed(1) : '0.0';
+  const totalBet = user.totalBet || 0;
+  const totalPayout = user.totalPayout || 0;
+
+  return {
+    id: user.id,
+    username: user.username,
+    balance: user.balance,
+    isAdmin: user.isAdmin,
+    createdAt: user.createdAt,
+    totalSpins,
+    totalWins,
+    losses: Math.max(0, losses),
+    totalBet,
+    totalPayout,
+    winRate: parseFloat(winRate),
+    settings: user.settings || {},
+    sessions: getUserSessions(user.username).length,
+  };
+}
+
+module.exports = {
+  getUsers, saveUsers, findUser, createUser, updateUser, deleteUser, resetAllBalances,
+  getConfig, updateConfig, getDifficultyConfig,
+  getJackpot, setJackpot,
+  getSpins, addSpin,
+  getUserSettings, updateUserSettings, getEffectiveConfig,
+  getUserSessions, addUserSession, removeUserSession, removeAllUserSessions,
+  updateUserTheme, updateUserLanguage, updateUserNotifications,
+  resetUserStats, getFullProfile,
+};

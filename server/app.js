@@ -31,6 +31,9 @@ app.get('/play/:gameId', (req, res) => {
 app.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/profile.html'));
 });
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/admin.html'));
+});
 
 // Static files
 app.use(express.static(path.join(__dirname, '../client'), { index: false }));
