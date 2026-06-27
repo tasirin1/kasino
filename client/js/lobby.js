@@ -267,8 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('navProfile')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (api._token) showProfileModal();
-    else showAuthModal('login');
+    window.location.href = '/profile';
   });
   document.getElementById('navPromo')?.addEventListener('click', (e) => {
     e.preventDefault();

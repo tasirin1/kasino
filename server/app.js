@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const gameRoutes = require('./routes/game');
 const adminRoutes = require('./routes/admin');
 const gamesRoutes = require('./routes/games');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api', authRoutes);
 app.use('/api', gameRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', gamesRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Route-specific pages (must be before static to avoid index.html hijack)
 app.get('/', (req, res) => {
@@ -25,6 +27,9 @@ app.get('/', (req, res) => {
 });
 app.get('/play/:gameId', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/game.html'));
+});
+app.get('/profile', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/profile.html'));
 });
 
 // Static files

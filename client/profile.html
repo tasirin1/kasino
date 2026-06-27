@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>slotcasino tasirin — Profil</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="profileApp">
+  <!-- HEADER -->
+  <header id="profileTopBar">
+    <div class="p-left">
+      <a href="/" class="p-back">← Kembali</a>
+    </div>
+    <div class="p-center">
+      <span class="p-title">PROFIL</span>
+    </div>
+    <div class="p-right">
+      <button id="pLogoutBtn" class="p-logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <div id="profileContent" class="p-scroll">
+    <!-- AVATAR & BASIC INFO -->
+    <div class="p-hero">
+      <div class="p-avatar" id="pAvatar">👤</div>
+      <h2 class="p-username" id="pUsername">—</h2>
+      <div class="p-balance-card">
+        <span class="p-balance-label">SALDO</span>
+        <span class="p-balance-value" id="pBalance">Rp0</span>
+      </div>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="p-stats-grid" id="pStatsGrid">
+      <div class="p-stat-card">
+        <span class="p-stat-icon">🎰</span>
+        <span class="p-stat-label">Total Spin</span>
+        <span class="p-stat-value" id="pTotalSpins">0</span>
+      </div>
+      <div class="p-stat-card">
+        <span class="p-stat-icon">🏆</span>
+        <span class="p-stat-label">Menang</span>
+        <span class="p-stat-value win-color" id="pTotalWins">0</span>
+      </div>
+      <div class="p-stat-card">
+        <span class="p-stat-icon">💔</span>
+        <span class="p-stat-label">Kalah</span>
+        <span class="p-stat-value lose-color" id="pLosses">0</span>
+      </div>
+      <div class="p-stat-card">
+        <span class="p-stat-icon">📊</span>
+        <span class="p-stat-label">Win Rate</span>
+        <span class="p-stat-value gold-color" id="pWinRate">0%</span>
+      </div>
+      <div class="p-stat-card">
+        <span class="p-stat-icon">💰</span>
+        <span class="p-stat-label">Total Taruhan</span>
+        <span class="p-stat-value" id="pTotalBet">Rp0</span>
+      </div>
+      <div class="p-stat-card">
+        <span class="p-stat-icon">💎</span>
+        <span class="p-stat-label">Total Menang</span>
+        <span class="p-stat-value win-color" id="pTotalPayout">Rp0</span>
+      </div>
+    </div>
+
+    <!-- ACCOUNT INFO -->
+    <div class="p-section">
+      <h3 class="p-section-title">📋 Informasi Akun</h3>
+      <div class="p-info-list">
+        <div class="p-info-item">
+          <span class="p-info-key">Username</span>
+          <span class="p-info-val" id="pInfoUsername">—</span>
+        </div>
+        <div class="p-info-item">
+          <span class="p-info-key">ID Akun</span>
+          <span class="p-info-val mono" id="pInfoId">—</span>
+        </div>
+        <div class="p-info-item">
+          <span class="p-info-key">Status</span>
+          <span class="p-info-val" id="pInfoStatus"><span class="status-badge active">Aktif</span></span>
+        </div>
+        <div class="p-info-item">
+          <span class="p-info-key">Bergabung</span>
+          <span class="p-info-val" id="pInfoCreated">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="p-section">
+      <h3 class="p-section-title">⚙️ Pengaturan</h3>
+      <div class="p-menu-list">
+        <button class="p-menu-item" id="pEditProfileBtn">
+          <span class="p-menu-icon">✏️</span>
+          <span class="p-menu-text">Edit Profil</span>
+          <span class="p-menu-arrow">›</span>
+        </button>
+        <button class="p-menu-item" id="pChangePassBtn">
+          <span class="p-menu-icon">🔒</span>
+          <span class="p-menu-text">Ganti Password</span>
+          <span class="p-menu-arrow">›</span>
+        </button>
+        <button class="p-menu-item" id="pHistoryBtn">
+          <span class="p-menu-icon">📜</span>
+          <span class="p-menu-text">Riwayat Permainan</span>
+          <span class="p-menu-arrow">›</span>
+        </button>
+        <div class="p-menu-item disabled">
+          <span class="p-menu-icon">🎨</span>
+          <span class="p-menu-text">Tema</span>
+          <span class="p-menu-tag">Segera</span>
+        </div>
+        <div class="p-menu-item disabled">
+          <span class="p-menu-icon">🌐</span>
+          <span class="p-menu-text">Bahasa</span>
+          <span class="p-menu-tag">Segera</span>
+        </div>
+        <div class="p-menu-item disabled">
+          <span class="p-menu-icon">🔔</span>
+          <span class="p-menu-text">Notifikasi</span>
+          <span class="p-menu-tag">Segera</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Profile -->
+  <div id="pEditModal" class="p-modal" style="display:none">
+    <div class="p-modal-bg"></div>
+    <div class="p-modal-content">
+      <button class="p-modal-close" id="pEditModalClose">✕</button>
+      <h3 class="p-modal-title">✏️ Edit Profil</h3>
+      <form id="pEditForm">
+        <div class="p-form-group">
+          <label>Username</label>
+          <input type="text" id="pEditUsername" required minlength="3" placeholder="Username baru">
+        </div>
+        <div id="pEditError" class="p-form-error"></div>
+        <button type="submit" class="p-btn p-btn-gold p-btn-full">Simpan</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Change Password -->
+  <div id="pPassModal" class="p-modal" style="display:none">
+    <div class="p-modal-bg"></div>
+    <div class="p-modal-content">
+      <button class="p-modal-close" id="pPassModalClose">✕</button>
+      <h3 class="p-modal-title">🔒 Ganti Password</h3>
+      <form id="pPassForm">
+        <div class="p-form-group">
+          <label>Password Lama</label>
+          <input type="password" id="pOldPass" required placeholder="Password saat ini">
+        </div>
+        <div class="p-form-group">
+          <label>Password Baru</label>
+          <input type="password" id="pNewPass" required minlength="4" placeholder="Password baru">
+        </div>
+        <div class="p-form-group">
+          <label>Konfirmasi Password Baru</label>
+          <input type="password" id="pConfirmPass" required placeholder="Ulangi password baru">
+        </div>
+        <div id="pPassError" class="p-form-error"></div>
+        <button type="submit" class="p-btn p-btn-gold p-btn-full">Ubah Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: History -->
+  <div id="pHistModal" class="p-modal" style="display:none">
+    <div class="p-modal-bg"></div>
+    <div class="p-modal-content p-modal-wide">
+      <button class="p-modal-close" id="pHistModalClose">✕</button>
+      <h3 class="p-modal-title">📜 Riwayat Permainan</h3>
+      <div id="pHistoryList" class="p-history-list">
+        <div class="p-history-empty">Memuat riwayat...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="pToast" class="p-toast" style="display:none"></div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/profile.js"></script>
+</body>
+</html>
