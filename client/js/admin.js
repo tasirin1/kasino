@@ -31,6 +31,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cfgSave = $('cfgSave'), accountList = $('accountList'), accountCount = $('accountCount');
   const btnAddAccount = $('btnAddAccount'), btnResetAll = $('btnResetAll');
   const adminLogout = $('adminLogout');
+  // Admin logout
+  adminLogout.onclick = function() {
+    if (!confirm('Yakin ingin logout?')) return;
+    // Call logout API
+    api.post('/api/profile/logout').catch(function() {});
+    // Clear all auth data
+    api._token = null;
+    localStorage.removeItem('kasino_token');
+    sessionStorage.clear();
+    // Redirect (replace so back button can't return)
+    window.location.replace('/login');
+  };
+
   const settingsOverlay = $('settingsOverlay');
   const settingsForm = $('settingsForm');
   const settingsTitle = $('settingsTitle');
