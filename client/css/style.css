@@ -32,7 +32,7 @@ body{display:flex;align-items:center;justify-content:center;
 .auth-link a{color:#D5AD6D;text-decoration:none}
 
 /* ===== GAME APP ===== */
-#app{display:flex;flex-direction:column;width:100vw;height:100dvh;position:fixed;inset:0;overflow:hidden;
+#app{display:flex;flex-direction:column;width:100vw;height:100dvh;height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));position:fixed;inset:0;overflow:hidden;
   background:radial-gradient(ellipse at 50% 20%,#1a0035 0%,#050008 60%,#020005 100%)}
 
 /* TOP BAR */
@@ -173,7 +173,7 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .acc-actions{display:flex;gap:4px}
 
 /* ===== RESPONSIVE ===== */
-@media(orientation:landscape) and (max-height:500px){
+@media(orientation:landscape) and (max-height:550px){
   #topBar{height:28px;padding:1px 8px}
   .h-title{font-size:16px}
   .h-val{font-size:11px}
@@ -380,7 +380,7 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .auth-link a{color:#D5AD6D;text-decoration:none}
 
 /* ===== GAME PAGE ===== */
-#gameApp{display:flex;flex-direction:column;height:100dvh;overflow:hidden;background:radial-gradient(ellipse at top,#1a0020,#0a0010)}
+#gameApp{display:flex;flex-direction:column;height:100dvh;height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:hidden;background:radial-gradient(ellipse at top,#1a0020,#0a0010)}
 #gameTopBar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;
   background:rgba(26,0,32,0.95);border-bottom:1px solid rgba(213,173,109,0.1);flex-shrink:0;min-height:36px}
 .g-back{background:none;border:none;color:#D5AD6D;font-size:12px;cursor:pointer;padding:4px 8px}
@@ -390,18 +390,17 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .g-username{font-size:11px;color:rgba(213,173,109,0.6)}
 .g-btn{padding:4px 10px;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer}
 .g-btn.tiny{padding:3px 8px;font-size:10px;background:linear-gradient(180deg,#D5AD6D,#B8860B);color:#1a0020}
-.game-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:2px;min-height:0}
-.game-canvas{width:100%;max-width:400px;height:100%;max-height:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.game-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:1px;min-height:0}
+.game-canvas{width:100%;max-width:420px;flex:1;display:flex;flex-direction:column;justify-content:center;overflow:hidden;min-height:0}
 
 /* ===== CLASSIC 777 (in-game) ===== */
-#c777{display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden}
+#c777{display:flex;flex-direction:column;flex:1;width:100%;overflow:hidden;min-height:0}
 #c777WinMsg{text-align:center;padding:2px 0;flex-shrink:0}
 .win-msg{text-align:center;padding:2px 0;flex-shrink:0}
 .win-text{font-size:14px;font-weight:700;color:#D5AD6D;text-shadow:0 0 10px rgba(213,173,109,0.3)}
-#c777Reels{flex:1;display:flex;gap:3px;padding:2px;min-height:0;align-items:stretch}
-.reels{flex:1;display:flex;gap:3px;padding:2px;min-height:0}
-.reel{flex:1;position:relative;overflow:hidden;border-radius:6px;
-  background:rgba(0,0,0,0.4);border:1px solid rgba(213,173,109,0.12)}
+#c777Reels{flex:1;display:flex;gap:3px;padding:2px;min-height:0;align-items:stretch;overflow:hidden}
+.reels{flex:1;display:flex;gap:3px;padding:2px;min-height:0;overflow:hidden}
+
 .reel{flex:1;position:relative;overflow:hidden;border-radius:8px;
   background:rgba(0,0,0,0.4);border:1px solid rgba(213,173,109,0.15)}
 #c777Controls{flex-shrink:0;padding:4px 6px}
@@ -483,10 +482,64 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 }
 
 /* ===== GAME PAGE RESPONSIVE ===== */
+@media(orientation:landscape) and (max-height:600px){
+  #gameTopBar{padding:2px 6px;min-height:28px}
+  .g-title{font-size:11px}
+  .g-back{font-size:10px;padding:2px 6px}
+  .g-balance{font-size:10px}
+  .g-username{font-size:9px}
+  .game-container{padding:1px}
+  .game-canvas{max-width:100%}
+  #c777Reels{padding:1px;gap:2px}
+  #c777WinMsg{padding:1px 0}
+  .win-text{font-size:10px}
+  #c777Controls{padding:2px 4px}
+  .spin-btn-lg{padding:5px 14px;font-size:12px;min-width:80px}
+  .bet-btn-sm{width:22px;height:22px;font-size:12px}
+  .bet-val{font-size:11px}
+  .bet-lbl{font-size:7px}
+  .win-val{font-size:11px}
+  .win-lbl{font-size:7px}
+  .toggle-sm{font-size:8px}
+  .ctrl-btn-sm{width:30px;height:22px;font-size:8px}
+  .c-top{margin-bottom:1px}
+}
+@media(orientation:landscape) and (max-height:400px){
+  #gameTopBar{min-height:24px;padding:1px 4px}
+  .g-title{font-size:10px}
+  #c777Reels{gap:1px;padding:0}
+  #c777Controls{padding:1px 2px}
+  .spin-btn-lg{padding:3px 10px;font-size:10px;min-width:60px}
+  .bet-btn-sm{width:18px;height:18px;font-size:10px}
+  .bet-val{font-size:9px}
+  .win-val{font-size:9px}
+  .toggle-sm{font-size:7px;gap:2px}
+  .ctrl-btn-sm{width:24px;height:18px;font-size:7px}
+}
+
+/* ===== LEGACY GAME LANDSCAPE ===== */
 @media(orientation:landscape) and (max-height:500px){
-  #gameTopBar{padding:3px 8px}
-  .g-title{font-size:12px}
-  #c777Reels{padding:2px;gap:2px}
-  .spin-btn-lg{padding:6px 16px;font-size:13px}
-  .bet-btn-sm{width:24px;height:24px;font-size:13px}
+  #app #topBar{height:28px;padding:1px 8px}
+  #app .h-title{font-size:16px}
+  #app .h-val{font-size:11px}
+  #app .h-lbl{font-size:6px}
+  #app #winMsg{height:16px}
+  #app #winText{font-size:8px}
+  #app #reels{padding:3px 6px;gap:2px}
+  #app .spin-btn{font-size:12px;padding:5px 14px;min-width:70px}
+  #app .bet-btn{width:22px;height:22px;font-size:12px}
+  #app .bet-val{font-size:11px}
+  #app .win-val{font-size:11px}
+  #app .toggle{font-size:7px;padding:2px 4px}
+  #app .ctrl-btn{font-size:7px;padding:2px 6px}
+  #app #controls{padding:2px 6px}
+  #app .c-top{gap:6px;margin-bottom:2px}
+  #app .c-bottom{gap:4px}
+  #app .h-reset{width:18px;height:18px;font-size:10px}
+}
+@media(orientation:landscape) and (max-height:400px){
+  #app #topBar{height:22px;padding:1px 4px}
+  #app .h-title{font-size:13px}
+  #app #reels{padding:2px 4px;gap:1px}
+  #app .spin-btn{font-size:10px;padding:3px 10px;min-width:50px}
 }
