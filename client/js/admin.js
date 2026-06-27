@@ -265,7 +265,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       cfgPayout.value = p.pay;
       cfgPayoutVal.textContent = sliderMult(cfgPayout.value);
     }
-    await api.post('/api/admin/config', { difficulty: diff });
+    await api.post('/api/admin/config', {
+      difficulty: diff,
+      winRate: parseInt(cfgWinRate.value) / 200,
+      payoutMultiplier: parseInt(cfgPayout.value) / 2,
+    });
     loadConfig(); loadStats();
   };
 
@@ -297,6 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   cfgSave.onclick = async () => {
     await api.post('/api/admin/config', {
+      difficulty: cfgDifficulty.value,
       winRate: parseInt(cfgWinRate.value) / 200,
       payoutMultiplier: parseInt(cfgPayout.value) / 2,
       jackpotHitRate: parseInt(cfgJackpotRate.value) / 200,
