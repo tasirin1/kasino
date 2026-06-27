@@ -994,3 +994,195 @@ body.body-profile .p-scroll {
 body.body-profile .p-top-bar {
   position: sticky; top: 0; z-index: 100;
 }
+
+/* ============================================================
+   ADMIN SLIDER — CASINO THEME RANGE INPUT
+   ============================================================ */
+
+/* Slider Group Container */
+.slider-group {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; min-width: 0;
+}
+
+/* Slider Value Display */
+.slider-val {
+  min-width: 72px; text-align: center;
+  font-size: 13px; font-weight: 800;
+  color: #FFD700; font-variant-numeric: tabular-nums;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* Base range input reset */
+.slider-group input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  flex: 1; height: 6px;
+  background: rgba(80, 20, 120, 0.4);
+  border-radius: 3px; outline: none;
+  cursor: pointer; min-width: 0;
+  transition: background 0.15s;
+}
+
+/* Track (webkit) */
+.slider-group input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: rgba(80, 20, 120, 0.4);
+}
+
+/* Thumb (webkit) */
+.slider-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #DAA520);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+  cursor: pointer; margin-top: -7px;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+/* Track (firefox) */
+.slider-group input[type="range"]::-moz-range-track {
+  height: 6px; border-radius: 3px;
+  background: rgba(80, 20, 120, 0.4);
+  border: none;
+}
+
+/* Thumb (firefox) */
+.slider-group input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #DAA520);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+  cursor: pointer;
+}
+
+/* Progress fill (webkit only — uses linear-gradient on track) */
+.slider-group input[type="range"] {
+  background: linear-gradient(
+    to right,
+    #FFD700 0%,
+    #FFD700 var(--slider-pct, 50%),
+    rgba(80, 20, 120, 0.4) var(--slider-pct, 50%),
+    rgba(80, 20, 120, 0.4) 100%
+  );
+}
+
+/* Disabled slider (use global) */
+.slider-group input[type="range"].use-global,
+.slider-group input[type="range"]:disabled {
+  opacity: 0.35; cursor: not-allowed;
+  background: rgba(60, 60, 80, 0.3) !important;
+}
+.slider-group input[type="range"]:disabled::-webkit-slider-thumb {
+  background: rgba(100, 100, 120, 0.5);
+  box-shadow: none;
+}
+.slider-group input[type="range"]:disabled::-moz-range-thumb {
+  background: rgba(100, 100, 120, 0.5);
+  box-shadow: none;
+}
+
+/* Global Toggle Button */
+.slider-global-btn {
+  padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(213,173,109,0.15);
+  background: rgba(213,173,109,0.08); color: #D5AD6D;
+  font-size: 9px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; transition: all 0.15s; flex-shrink: 0;
+}
+.slider-global-btn.active {
+  background: rgba(213,173,109,0.15);
+  border-color: rgba(213,173,109,0.3);
+}
+.slider-global-btn:active { transform: scale(0.95); }
+.slider-global-btn.active:after { content: ' ✓'; }
+
+/* Responsive: stack on small screens */
+@media (max-width: 480px) {
+  .form-row { flex-wrap: wrap; }
+  .form-row > label { min-width: 100%; margin-bottom: 4px; }
+  .slider-val { min-width: 60px; font-size: 12px; }
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    width: 24px; height: 24px; margin-top: -9px;
+  }
+  .slider-group input[type="range"]::-moz-range-thumb {
+    width: 24px; height: 24px;
+  }
+}
+
+/* ============================================================
+   ADMIN DEBUG MODE
+   ============================================================ */
+.debug-toggle {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 0; margin-top: 8px;
+  border-top: 1px solid rgba(155,48,255,0.1);
+  cursor: pointer; font-size: 13px; color: rgba(180,160,220,0.7);
+}
+.debug-toggle input[type="checkbox"] {
+  accent-color: #FFD700; width: 16px; height: 16px;
+}
+.debug-panel {
+  margin-top: 8px; padding: 12px;
+  background: rgba(0,0,0,0.3); border-radius: 8px;
+  border: 1px solid rgba(155,48,255,0.1);
+}
+.debug-row {
+  display: flex; justify-content: space-between;
+  padding: 4px 0; font-size: 12px;
+  color: rgba(180,160,220,0.6);
+}
+.debug-row strong { color: #FFD700; font-family: monospace; }
+.debug-results {
+  margin-top: 8px; max-height: 200px; overflow-y: auto;
+}
+.debug-entry {
+  display: flex; gap: 8px; font-size: 11px;
+  padding: 3px 6px; border-radius: 4px;
+  margin-bottom: 2px; font-family: monospace;
+  background: rgba(0,0,0,0.2);
+}
+.debug-entry.win { border-left: 2px solid #4CAF50; }
+.debug-entry.lose { border-left: 2px solid #FF6B6B; }
+.debug-entry span { min-width: 60px; }
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative; display: inline-block;
+  width: 40px; height: 22px; cursor: pointer;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: rgba(80,20,120,0.3); border-radius: 22px;
+  transition: 0.2s; border: 1px solid rgba(155,48,255,0.15);
+}
+.toggle-slider::before {
+  content: ''; position: absolute; left: 2px; bottom: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(180,160,220,0.4); transition: 0.2s;
+}
+.toggle-switch input:checked + .toggle-slider {
+  background: rgba(213,173,109,0.2); border-color: #D5AD6D;
+}
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(18px); background: #FFD700;
+  box-shadow: 0 0 8px rgba(255,215,0,0.3);
+}
+
+/* Debug Panel */
+#debugPanel {
+  font-family: 'Courier New', monospace; font-size: 10px;
+  line-height: 1.5; color: #00ff88;
+}
+#debugPanel::-webkit-scrollbar { width: 3px; }
+#debugPanel::-webkit-scrollbar-track { background: transparent; }
+#debugPanel::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.2); border-radius: 3px; }

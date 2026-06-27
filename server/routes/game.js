@@ -30,10 +30,10 @@ router.post('/spin', authenticate, async (req, res) => {
   const config = gamesService.getEffectiveGameConfig(effectiveGameId, username);
   if (!config) return res.status(400).json({ error: 'Game not found' });
 
-  const betAmount = parseInt(bet) || config.minBet || 100;
+  const betAmount = (parseInt(bet) || config.minBet) ?? 100;
 
-  if (betAmount < (config.minBet || 10) || betAmount > (config.maxBet || 10000)) {
-    return res.status(400).json({ error: `Bet must be between ${config.minBet || 10} and ${config.maxBet || 10000}` });
+  if (betAmount < (config.minBet ?? 10) || betAmount > (config.maxBet ?? 10000)) {
+    return res.status(400).json({ error: `Bet must be between ${config.minBet ?? 10} and ${config.maxBet ?? 10000}` });
   }
   if (user.balance < betAmount) {
     return res.status(400).json({ error: 'Insufficient balance' });
@@ -44,10 +44,11 @@ router.post('/spin', authenticate, async (req, res) => {
   user.totalSpins++;
   user.totalBet += betAmount;
 
-  const winRate = config.winRate || 0.15;
+  const winRate = config.winRate ?? 0.15;
   const roll = Math.random();
   const isWin = roll < winRate;
-  const payoutMult = config.payoutMultiplier || 2;
+  const payoutMult = config.payoutMultiplier ?? 2;
+  console.log('[Spin]', username, 'bet:', betAmount, 'winRate:', (winRate*100).toFixed(1)+'%', 'roll:', (roll*100).toFixed(2)+'%', 'result:', isWin ? 'WIN' : 'LOSE');
 
   let payout = 0;
   let result = {};
@@ -116,7 +117,8 @@ router.post('/spin', authenticate, async (req, res) => {
     bet: betAmount,
     balance: user.balance,
     roll,
-    winRate,
+    winRate: winRate,
+    _debug: { winRate: winRate, roll: roll, threshold: (winRate * 100).toFixed(1) + '%', result: isWin ? 'WIN' : 'LOSE' },
     ...result,
   });
 });

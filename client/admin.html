@@ -31,13 +31,79 @@
     <div class="admin-card" id="configCard">
       <h3>⚙️ Konfigurasi Game</h3>
       <div class="form-row"><label>Difficulty</label><select id="cfgDifficulty"></select></div>
-      <div class="form-row"><label>Win Rate</label><span id="cfgWinRateVal">15%</span><input type="range" id="cfgWinRate" min="5" max="750" value="150"></div>
-      <div class="form-row"><label>Payout Multiplier</label><span id="cfgPayoutVal">3x</span><input type="range" id="cfgPayout" min="10" max="500" value="30"></div>
-      <div class="form-row"><label>Jackpot</label><input type="number" id="cfgJackpot" class="admin-input"></div>
-      <div class="form-row"><label>Starting Money</label><input type="number" id="cfgStartMoney" class="admin-input"></div>
-      <div class="form-row"><label>Min Bet</label><input type="number" id="cfgMinBet" class="admin-input"></div>
-      <div class="form-row"><label>Max Bet</label><input type="number" id="cfgMaxBet" class="admin-input"></div>
+      
+      <div class="form-row">
+        <label>🎰 Win Rate</label>
+        <div class="slider-group">
+          <input type="range" id="cfgWinRate" min="0" max="200" value="30" step="1">
+          <span id="cfgWinRateVal" class="slider-val">15.0%</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label>💰 Payout Multiplier</label>
+        <div class="slider-group">
+          <input type="range" id="cfgPayout" min="1" max="200" value="6" step="1">
+          <span id="cfgPayoutVal" class="slider-val">3.0x</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label>🎲 Jackpot Rate</label>
+        <div class="slider-group">
+          <input type="range" id="cfgJackpotRate" min="0" max="200" value="5" step="1">
+          <span id="cfgJackpotRateVal" class="slider-val">2.5%</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label>💵 Jackpot (Rp)</label>
+        <div class="slider-group">
+          <input type="range" id="cfgJackpot" min="100000" max="1000000000" value="5000000" step="50000">
+          <span id="cfgJackpotVal" class="slider-val">Rp5.000.000</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label>💵 Starting Money</label>
+        <div class="slider-group">
+          <input type="range" id="cfgStartMoney" min="100" max="10000000" value="10000" step="100">
+          <span id="cfgStartMoneyVal" class="slider-val">Rp10.000</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label>💵 Min Bet</label>
+        <div class="slider-group">
+          <input type="range" id="cfgMinBet" min="100" max="1000000" value="1000" step="100">
+          <span id="cfgMinBetVal" class="slider-val">Rp1.000</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <label>💵 Max Bet</label>
+        <div class="slider-group">
+          <input type="range" id="cfgMaxBet" min="100" max="10000000" value="100000" step="1000">
+          <span id="cfgMaxBetVal" class="slider-val">Rp100.000</span>
+        </div>
+      </div>
+      
       <button id="cfgSave" class="admin-btn">Simpan</button>
+      <div class="debug-section">
+        <label class="debug-toggle">
+          <input type="checkbox" id="cfgDebugMode">
+          <span>🔍 Debug Mode</span>
+        </label>
+        <div id="debugPanel" class="debug-panel" style="display:none">
+          <div class="debug-row"><span>Win Rate:</span><strong id="dbgWinRate">0%</strong></div>
+          <div class="debug-row"><span>Random:</span><strong id="dbgRandom">0</strong></div>
+          <div class="debug-row"><span>Result:</span><strong id="dbgResult">—</strong></div>
+          <div class="debug-row"><span>Last Roll:</span><strong id="dbgRoll">—</strong></div>
+          <div class="debug-row"><span>Threshold:</span><strong id="dbgThreshold">—</strong></div>
+          <button id="dbgTestBtn" class="admin-btn tiny">Test Spin</button>
+          <div id="dbgTestResults" class="debug-results"></div>
+        </div>
+      </div>
     </div>
 
     <!-- GAMES -->
@@ -66,11 +132,46 @@
     <div class="settings-modal">
       <h3 id="settingsTitle">Pengaturan Akun</h3>
       <form id="settingsForm">
-        <div class="form-row"><label>Win Rate (override)</label><input type="number" id="sWinRate" class="admin-input" placeholder="Kosongkan = global" step="1" min="1" max="750"></div>
-        <div class="form-row"><label>Payout Mult (override)</label><input type="number" id="sPayoutMult" class="admin-input" placeholder="Kosongkan = global" step="1" min="10" max="500"></div>
-        <div class="form-row"><label>Min Bet (override)</label><input type="number" id="sMinBet" class="admin-input" placeholder="Kosongkan = global"></div>
-        <div class="form-row"><label>Max Bet (override)</label><input type="number" id="sMaxBet" class="admin-input" placeholder="Kosongkan = global"></div>
-        <div class="form-row"><label>Jackpot Rate (override)</label><input type="number" id="sJackpotRate" class="admin-input" placeholder="Kosongkan = global" step="0.1" min="0" max="100"></div>
+        <div class="form-row">
+          <label>🎰 Win Rate</label>
+          <div class="slider-group">
+            <input type="range" id="sWinRate" min="0" max="200" step="1" class="use-global">
+            <span id="sWinRateVal" class="slider-val">Global</span>
+            <button type="button" class="slider-global-btn active">🌐 Global</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>💰 Payout Mult</label>
+          <div class="slider-group">
+            <input type="range" id="sPayoutMult" min="1" max="200" step="1" class="use-global">
+            <span id="sPayoutMultVal" class="slider-val">Global</span>
+            <button type="button" class="slider-global-btn active">🌐 Global</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>💵 Min Bet</label>
+          <div class="slider-group">
+            <input type="range" id="sMinBet" min="100" max="1000000" step="100" class="use-global">
+            <span id="sMinBetVal" class="slider-val">Global</span>
+            <button type="button" class="slider-global-btn active">🌐 Global</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>💵 Max Bet</label>
+          <div class="slider-group">
+            <input type="range" id="sMaxBet" min="100" max="10000000" step="1000" class="use-global">
+            <span id="sMaxBetVal" class="slider-val">Global</span>
+            <button type="button" class="slider-global-btn active">🌐 Global</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>🎲 Jackpot Rate</label>
+          <div class="slider-group">
+            <input type="range" id="sJackpotRate" min="0" max="200" step="1" class="use-global">
+            <span id="sJackpotRateVal" class="slider-val">Global</span>
+            <button type="button" class="slider-global-btn active">🌐 Global</button>
+          </div>
+        </div>
         <p id="sNote" style="color:#FF6B6B;font-size:12px"></p>
         <div class="form-actions">
           <button type="submit" class="admin-btn">Simpan</button>

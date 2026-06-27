@@ -235,17 +235,27 @@ function getEffectiveGameConfig(gameId, username) {
   const gameConfig = getGameConfig(gameId);
   if (!gameConfig) return null;
 
-  // Start with global config
+  // Start with game defaults
+  const merged = { ...gameConfig };
+
+  // Global admin config OVERRIDES game defaults
+  // (priority: user > global > game > hardcoded)
   const global = getGlobalConfig();
+  for (const key of Object.keys(global)) {
+    if (global[key] !== undefined) {
+      merged[key] = global[key];
+    }
+  }
 
-  // Merge game config over global
-  const merged = { ...global, ...gameConfig };
-
-  // Merge per-account game settings if available
+  // User per-account settings have highest priority
   if (username) {
     const userSettings = getUserGameSettings(username, gameId);
     if (userSettings) {
-      Object.assign(merged, userSettings);
+      for (const key of Object.keys(userSettings)) {
+        if (userSettings[key] !== undefined) {
+          merged[key] = userSettings[key];
+        }
+      }
     }
   }
 
