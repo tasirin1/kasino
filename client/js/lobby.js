@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('navPromo')?.addEventListener('click', (e) => {
     e.preventDefault();
-    showToast('🎁 Promo akan segera hadir!');
+    showComingSoonModal();
   });
   document.getElementById('navGames')?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -327,6 +327,18 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="l-btn l-btn-outline" style="flex:1;font-size:12px" onclick="document.getElementById('authModal').style.display='none'">Tutup</button>
         </div>
       </div>`;
+  }
+
+  // ===== COMING SOON MODAL =====
+  function showComingSoonModal() {
+    modal.style.display = 'flex';
+    modalBody.innerHTML = \`
+      <div class="l-auth-card" style="text-align:center">
+        <div style="font-size:48px;margin-bottom:8px">🎁</div>
+        <h2 class="l-auth-title" style="font-size:16px">PROMO</h2>
+        <p style="color:rgba(180,160,220,0.5);font-size:12px;margin:12px 0">Fitur promo akan segera hadir! Nantikan bonus dan event spesial.</p>
+        <button class="l-btn l-btn-gold l-btn-full" onclick="document.getElementById('authModal').style.display='none'">Tutup</button>
+      </div>\`;
   }
 
   // ===== INIT =====

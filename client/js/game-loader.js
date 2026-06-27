@@ -21,6 +21,18 @@
       '<p style="font-size:12px;margin-bottom:12px">' + msg + '</p>' +
       '<a href="/" style="display:inline-block;padding:6px 14px;background:linear-gradient(180deg,#D5AD6D,#B8860B);color:#1a0020;border-radius:6px;text-decoration:none;font-size:12px;font-weight:700">Kembali ke Lobby</a></div>';
   }
+  function showComingSoon(gameId) {
+    if (!container) return;
+    const gameNames = { 'diceroll': 'Dice Roll', 'scratchcard': 'Scratch Card', 'luckybox': 'Lucky Box', 'wheel': 'Wheel of Fortune' };
+    const name = gameNames[gameId] || gameId;
+    container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;text-align:center;padding:20px">' +
+      '<div style="font-size:48px">🚧</div>' +
+      '<h2 style="color:#D5AD6D;font-size:18px;font-weight:800">' + name + '</h2>' +
+      '<p style="color:rgba(180,160,220,0.5);font-size:12px;max-width:280px">Game sedang dalam pengembangan. Akan segera hadir!</p>' +
+      '<div style="display:flex;gap:8px;margin-top:4px">' +
+      '<a href="/play/classic777" style="padding:6px 16px;border:none;border-radius:6px;background:linear-gradient(180deg,#FFD700,#B8860B);color:#1a0020;font-size:12px;font-weight:700;text-decoration:none">Main Classic 777</a>' +
+      '<a href="/" style="padding:6px 16px;border:1px solid rgba(213,173,109,0.2);border-radius:6px;color:#D5AD6D;font-size:12px;font-weight:600;text-decoration:none">Kembali</a></div></div>';
+  }
 
   // Auth modal
   function showAuthModal(formType) {
@@ -125,7 +137,7 @@
       // 3. Load game script
       const module = await loadScript(gameId);
       if (!module) {
-        showError('Module not found', 'Game module ' + gameId + ' tidak ditemukan');
+        showComingSoon(gameId);
         return;
       }
 

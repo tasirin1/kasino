@@ -191,6 +191,13 @@
   $('pHistModalClose')?.addEventListener('click', () => histModal.style.display = 'none');
   histModal?.addEventListener('click', (e) => { if (e.target === histModal) histModal.style.display = 'none'; });
 
+  // ===== COMING SOON for disabled menu items =====
+  document.querySelectorAll('.p-menu-item.disabled')?.forEach(el => {
+    el.addEventListener('click', () => {
+      showToast('🔧 Fitur akan segera hadir!');
+    });
+  });
+
   // ===== INIT =====
   await loadProfile();
 })();

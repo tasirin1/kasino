@@ -392,10 +392,10 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .game-canvas{width:100%;max-width:440px;flex:1;display:flex;flex-direction:column;justify-content:center;overflow:hidden;min-height:0;padding:0 4px;align-self:stretch}
 /* ===== CLASSIC 777 - MOBILE CASINO SLOT ===== */
 #c777{display:flex;flex-direction:column;align-items:center;width:100%;overflow:hidden;gap:0;justify-content:center}
-#c777WinMsg{flex-shrink:0;height:18px;display:flex;align-items:center;justify-content:center;width:100%}
+.win-msg,#c777WinMsg{flex-shrink:0;height:18px;display:flex;align-items:center;justify-content:center;width:100%}
 .c777-msg-text{font-size:10px;font-weight:700;color:rgba(213,173,109,0.6);text-transform:uppercase;letter-spacing:1.5px;text-shadow:0 0 6px rgba(255,215,0,0.08)}
 /* REEL FRAME — limited height, centered */
-#c777Reels{flex-shrink:0;display:flex;gap:4px;padding:3px;width:100%;height:min(45vh,340px);min-height:160px;max-height:340px;overflow:hidden;position:relative}
+.reels,#c777Reels{flex-shrink:0;display:flex;gap:4px;padding:3px;width:100%;height:min(45vh,340px);min-height:160px;max-height:340px;overflow:hidden;position:relative}
 #c777Reels::before{content:"";position:absolute;inset:2px;border:2px solid rgba(213,173,109,0.12);border-radius:10px;pointer-events:none;z-index:1}
 #c777Reels .reel{flex:1;position:relative;overflow:hidden;border-radius:6px;background:rgba(0,0,0,0.4);border:1px solid rgba(213,173,109,0.1);z-index:2}
 /* Payline indicator overlay */
@@ -405,7 +405,7 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 /* BET ROW */
 .c777-bet-row{display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 8px;flex-shrink:0}
 .c777-bet-group{display:flex;align-items:center;gap:4px}
-.c777-bet-btn{width:28px;height:28px;border:none;border-radius:6px;background:rgba(213,173,109,0.12);color:#D5AD6D;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.bet-btn-sm,.c777-bet-btn{width:28px;height:28px;border:none;border-radius:6px;background:rgba(213,173,109,0.12);color:#D5AD6D;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
 .c777-bet-btn:active{background:rgba(213,173,109,0.25);transform:scale(0.9)}
 .c777-bet-display{display:flex;flex-direction:column;align-items:center;line-height:1;min-width:55px}
 .c777-bet-label{font-size:7px;font-weight:600;color:rgba(180,160,220,0.35);text-transform:uppercase;letter-spacing:1px}
@@ -416,14 +416,14 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 .c777-win-value.flash{animation:flashNum 0.4s ease 2}
 /* CONTROL ROW */
 .c777-ctrl-row{display:flex;align-items:center;justify-content:center;width:100%;padding:4px 8px 8px;gap:6px;flex-shrink:0}
-.c777-tog{display:flex;align-items:center;gap:2px;font-size:9px;font-weight:700;color:rgba(180,160,220,0.4);cursor:pointer;padding:4px 8px;border-radius:4px;border:1px solid transparent;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.5px}
+.toggle-sm,.c777-tog{display:flex;align-items:center;gap:2px;font-size:9px;font-weight:700;color:rgba(180,160,220,0.4);cursor:pointer;padding:4px 8px;border-radius:4px;border:1px solid transparent;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.5px}
 .c777-tog:active{background:rgba(155,48,255,0.08)}
 .c777-tog input{display:none}
 .c777-tog:has(input:checked){color:rgba(155,48,255,0.85);border-color:rgba(155,48,255,0.2);background:rgba(155,48,255,0.06)}
-.c777-max-btn{padding:4px 10px;border-radius:4px;border:1px solid rgba(213,173,109,0.15);background:rgba(213,173,109,0.05);color:rgba(213,173,109,0.6);font-size:9px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.15s}
+.ctrl-btn-sm,.c777-max-btn{padding:4px 10px;border-radius:4px;border:1px solid rgba(213,173,109,0.15);background:rgba(213,173,109,0.05);color:rgba(213,173,109,0.6);font-size:9px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.15s}
 .c777-max-btn:active{background:rgba(213,173,109,0.12);transform:scale(0.95)}
 /* SPIN BUTTON — big, golden, centered */
-.c777-spin-btn{flex-shrink:0;padding:8px 24px;border:none;border-radius:8px;background:linear-gradient(180deg,#FFD700 0%,#E5B800 40%,#B8860B 100%);color:#1a0020;font-size:16px;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px;box-shadow:0 2px 12px rgba(255,215,0,0.25),inset 0 1px 0 rgba(255,255,255,0.3);transition:all 0.12s;min-width:90px;min-height:38px}
+.spin-btn-lg,.c777-spin-btn{flex-shrink:0;padding:8px 24px;border:none;border-radius:8px;background:linear-gradient(180deg,#FFD700 0%,#E5B800 40%,#B8860B 100%);color:#1a0020;font-size:16px;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px;box-shadow:0 2px 12px rgba(255,215,0,0.25),inset 0 1px 0 rgba(255,255,255,0.3);transition:all 0.12s;min-width:90px;min-height:38px}
 .c777-spin-btn:active{transform:scale(0.93);box-shadow:0 1px 4px rgba(255,215,0,0.1)}
 .c777-spin-btn:disabled{opacity:0.3;cursor:not-allowed;transform:none}
 .c777-spin-btn.pulse{animation:btnPulse 0.3s ease}
@@ -442,7 +442,7 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
   #c777Reels{padding:1px;gap:2px}
   #c777WinMsg{padding:1px 0}
   .win-text{font-size:10px}
-  #c777Controls{padding:2px 4px}
+  .controls,#c777Controls{padding:2px 4px}
   .spin-btn-lg{padding:5px 14px;font-size:12px;min-width:80px}
   .bet-btn-sm{width:22px;height:22px;font-size:12px}
   .bet-val{font-size:11px}
@@ -659,3 +659,30 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
   .l-grid{grid-template-columns:repeat(4,1fr);max-width:900px}
   .l-hero{border-radius:12px;margin:0 16px}
 }
+
+.ctrl-left,.ctrl-right{display:flex;align-items:center;gap:4px}
+
+/* ===== PLINKO ===== */
+.plinko-game{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;height:100%}
+.plinko-board{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0}
+.plinko-board canvas{max-width:100%;max-height:100%;border-radius:8px}
+.plinko-risks{display:flex;gap:4px}
+.plinko-risk-btn{padding:3px 8px;border:1px solid rgba(213,173,109,0.15);border-radius:5px;
+  background:rgba(255,255,255,0.03);color:rgba(180,160,220,0.5);font-size:10px;cursor:pointer;transition:all 0.15s}
+.plinko-risk-btn.active{border-color:#D5AD6D;background:rgba(213,173,109,0.1);color:#D5AD6D}
+.plinko-drop-btn{padding:6px 16px;border:none;border-radius:6px;background:linear-gradient(180deg,#D5AD6D,#B8860B);
+  color:#1a0020;font-size:12px;font-weight:700;cursor:pointer}
+
+/* ===== COIN FLIP ===== */
+.cf-game{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px}
+.cf-coin{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#D5AD6D,#B8860B);
+  display:flex;align-items:center;justify-content:center;font-size:32px;transition:transform 0.8s;
+  box-shadow:0 0 20px rgba(213,173,109,0.2)}
+.cf-coin.flipping{animation:coinFlip 0.8s ease}
+@keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(720deg)}100%{transform:rotateY(1440deg)}}
+.cf-pick{display:flex;gap:8px;margin:4px 0}
+.cf-pick-btn{padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:transform 0.15s}
+.cf-pick-btn:active{transform:scale(0.95)}
+.cf-pick-btn:disabled{opacity:0.5}
+.heads-btn{background:linear-gradient(180deg,#D5AD6D,#B8860B);color:#1a0020}
+.tails-btn{background:linear-gradient(180deg,#4A90D9,#2A5DB0);color:#fff}
