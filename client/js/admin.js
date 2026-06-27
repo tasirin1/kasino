@@ -70,13 +70,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (result.error) { dbgTestResults.innerHTML = '<div style="color:#FF6B6B">Error: ' + result.error + '</div>'; return; }
     
     // Update debug panel
-    const d = result._debug || {};
+    const d = {};
     dbgWinRate.textContent = d.winRate ? (d.winRate * 100).toFixed(1) + '%' : (result.winRate * 100).toFixed(1) + '%';
     dbgRandom.textContent = (result.roll * 100).toFixed(2) + '%';
     dbgResult.textContent = result.win ? 'WIN ✅' : 'LOSE ❌';
     dbgResult.style.color = result.win ? '#4CAF50' : '#FF6B6B';
     dbgRoll.textContent = result.roll.toFixed(6);
-    dbgThreshold.textContent = d.threshold || ((result.winRate || 0) * 100).toFixed(1) + '%';
+    dbgThreshold.textContent = result.threshold || ((result.winRate || 0) * 100).toFixed(1) + '%';
     
     // Add to history
     const entry = document.createElement('div');
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       input.classList.remove('use-global');
       if (id === 'sWinRate' || id === 'sJackpotRate') valSpan.textContent = sliderPct(sliderValue);
       else if (id === 'sPayoutMult') valSpan.textContent = sliderMult(sliderValue);
-      else if (id === 'sMinBet' || id === 'sMaxBet' || id === 'sStartMoney') valSpan.textContent = sliderRupiah(sliderValue);
+      else if (id === 'sMinBet' || id === 'sMaxBet') valSpan.textContent = sliderRupiah(sliderValue);
       if (btn) btn.classList.remove('active');
     }
   }
@@ -133,31 +133,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     const input = $(id);
     const valSpan = $(id + 'Val');
     const btn = input?.parentElement?.querySelector('.slider-global-btn');
-    if (!input || !btn) return;
-    btn.addEventListener('click', () => {
+    if (!input || !btn) { console.warn('[Admin] Global toggle not found:', id); return; }
+    btn.addEventListener('click', function() {
       if (input.disabled) {
-        // Enable override
         input.disabled = false;
         input.classList.remove('use-global');
         btn.classList.remove('active');
-        // Trigger input to update display
         input.dispatchEvent(new Event('input'));
       } else {
-        // Revert to global
         input.disabled = true;
         input.classList.add('use-global');
         valSpan.textContent = 'Global';
         btn.classList.add('active');
       }
     });
-    // Live update
-    input.addEventListener('input', () => {
-      if (input.disabled) return;
-      if (id === 'sWinRate' || id === 'sJackpotRate') valSpan.textContent = sliderPct(input.value);
-      else if (id === 'sPayoutMult') valSpan.textContent = sliderMult(input.value);
-      else if (id === 'sMinBet' || id === 'sMaxBet') valSpan.textContent = sliderRupiah(input.value);
-    });
   }
+
+  // Initialize override sliders with real-time label updates and global toggle
+  ;(function initOverrideSliders() {
+    const OVERRIDE_SLIDERS = ['sWinRate', 'sPayoutMult', 'sMinBet', 'sMaxBet', 'sJackpotRate'];
+    for (const id of OVERRIDE_SLIDERS) {
+      _attachGlobalToggle(id);
+      const input = $(id);
+      const valSpan = $(id + 'Val');
+      if (!input || !valSpan) { console.warn('[Admin] Override slider not found:', id); continue; }
+      (function(sliderId, inputEl, valSpanEl) {
+        function onSliderInput() {
+          if (inputEl.disabled) return;
+          const v = inputEl.value;
+          if (sliderId === 'sWinRate' || sliderId === 'sJackpotRate') valSpanEl.textContent = sliderPct(v);
+          else if (sliderId === 'sPayoutMult') valSpanEl.textContent = sliderMult(v);
+          else if (sliderId === 'sMinBet' || sliderId === 'sMaxBet') valSpanEl.textContent = sliderRupiah(v);
+        }
+        inputEl.addEventListener('input', onSliderInput);
+        inputEl.addEventListener('change', onSliderInput);
+      })(id, input, valSpan);
+    }
+  })()
 
   function closeSettings() {
     settingsOverlay.style.display = 'none';
@@ -166,25 +178,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   settingsCancel.onclick = closeSettings;
-
-  settingsForm.onsubmit = async (e) => {
-    e.preventDefault();
-    if (!currentSettingsUser) return;
-    const settings = {};
-    const wr = $('sWinRate').value;
-    const pm = $('sPayoutMult').value;
-    const minb = $('sMinBet').value;
-    const maxb = $('sMaxBet').value;
-    const jr = $('sJackpotRate').value;
-    if (wr !== '' && wr !== null && !wr.disabled) settings.winRate = parseInt(wr.value) / 200;
-    if (pm !== '' && pm !== null && !pm.disabled) settings.payoutMultiplier = parseInt(pm.value) / 2;
-    if (minb !== '' && minb !== null && !minb.disabled) settings.minBet = parseInt(minb.value);
-    if (maxb !== '' && maxb !== null && !maxb.disabled) settings.maxBet = parseInt(maxb.value);
-    if (jr !== '' && jr !== null && !jr.disabled) settings.jackpotHitRate = parseInt(jr.value) / 200;
-    const res = await api.put(`/api/admin/users/${currentSettingsUser}/settings`, settings);
-    if (res.error) { $('sNote').textContent = 'Error: ' + res.error; }
-    else { closeSettings(); loadUsers(); loadStats(); }
-  };
 
   async function loadStats() {
     const stats = await api.get('/api/admin/stats');
@@ -284,13 +277,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     el.style.setProperty('--slider-pct', pct + '%');
   }
 
-  cfgWinRate.oninput = () => { cfgWinRateVal.textContent = sliderPct(cfgWinRate.value); _updateSliderFill(cfgWinRate); };
-  cfgPayout.oninput = () => { cfgPayoutVal.textContent = sliderMult(cfgPayout.value); _updateSliderFill(cfgPayout); };
-  cfgJackpotRate.oninput = () => { cfgJackpotRateVal.textContent = sliderJackpotRate(cfgJackpotRate.value); _updateSliderFill(cfgJackpotRate); };
-  cfgJackpot.oninput = () => { cfgJackpotVal.textContent = sliderRupiah(cfgJackpot.value); _updateSliderFill(cfgJackpot); };
-  cfgStartMoney.oninput = () => { cfgStartMoneyVal.textContent = sliderRupiah(cfgStartMoney.value); _updateSliderFill(cfgStartMoney); };
-  cfgMinBet.oninput = () => { cfgMinBetVal.textContent = sliderRupiah(cfgMinBet.value); _updateSliderFill(cfgMinBet); };
-  cfgMaxBet.oninput = () => { cfgMaxBetVal.textContent = sliderRupiah(cfgMaxBet.value); _updateSliderFill(cfgMaxBet); };
+  function _setupSlider(slider, label, formatter) {
+    if (!slider) { console.error("[Admin] Slider element not found"); return; }
+    if (!label) { console.error("[Admin] Label element not found for slider"); return; }
+    var handler = function() {
+      label.textContent = formatter(slider.value);
+      _updateSliderFill(slider);
+    };
+    slider.addEventListener("input", handler);
+    slider.addEventListener("change", handler);
+  }
+  _setupSlider(cfgWinRate, cfgWinRateVal, sliderPct);
+  _setupSlider(cfgPayout, cfgPayoutVal, sliderMult);
+  _setupSlider(cfgJackpotRate, cfgJackpotRateVal, sliderJackpotRate);
+  _setupSlider(cfgJackpot, cfgJackpotVal, sliderRupiah);
+  _setupSlider(cfgStartMoney, cfgStartMoneyVal, sliderRupiah);
+  _setupSlider(cfgMinBet, cfgMinBetVal, sliderRupiah);
+  _setupSlider(cfgMaxBet, cfgMaxBetVal, sliderRupiah);
 
   cfgSave.onclick = async () => {
     await api.post('/api/admin/config', {
@@ -342,23 +345,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Override settings form submit for game configs
-  const origSubmit = settingsForm.onsubmit;
+  // Single form submit handler for both game config and user settings
   settingsForm.onsubmit = async (e) => {
     e.preventDefault();
+    // Helper: read slider value, return null if disabled / global
+    function getSliderVal(id, divisor) {
+      const el = document.getElementById(id);
+      if (!el || el.disabled || el.value === '' || el.value === null) return null;
+      const v = parseInt(el.value);
+      return divisor ? v / divisor : v;
+    }
     if (gameSettingsGameId && !currentSettingsUser) {
       // Game config save
       const updates = {};
-      const wr = $('sWinRate').value;
-      const pm = $('sPayoutMult').value;
-      const minb = $('sMinBet').value;
-      const maxb = $('sMaxBet').value;
-      const jr = $('sJackpotRate').value;
-      if (wr !== '' && wr !== null && !wr.disabled) updates.winRate = parseInt(wr.value) / 200;
-      if (pm !== '' && pm !== null && !pm.disabled) updates.payoutMultiplier = parseInt(pm.value) / 2;
-      if (minb !== '' && minb !== null && !minb.disabled) updates.minBet = parseInt(minb.value);
-      if (maxb !== '' && maxb !== null && !maxb.disabled) updates.maxBet = parseInt(maxb.value);
-      if (jr !== '' && jr !== null && !jr.disabled) updates.jackpotHitRate = parseInt(jr.value) / 200;
+      const wr = getSliderVal('sWinRate', 200);
+      const pm = getSliderVal('sPayoutMult', 2);
+      const minb = getSliderVal('sMinBet', null);
+      const maxb = getSliderVal('sMaxBet', null);
+      const jr = getSliderVal('sJackpotRate', 200);
+      if (wr !== null) updates.winRate = wr;
+      if (pm !== null) updates.payoutMultiplier = pm;
+      if (minb !== null) updates.minBet = minb;
+      if (maxb !== null) updates.maxBet = maxb;
+      if (jr !== null) updates.jackpotHitRate = jr;
       const res = await api.put(`/api/admin/games/${gameSettingsGameId}/config`, updates);
       if (res.error) { $('sNote').textContent = 'Error: ' + res.error; }
       else { closeSettings(); gameSettingsGameId = null; loadGames(); }
@@ -367,18 +376,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // User settings save
     if (currentSettingsUser) {
       const settings = {};
-      const wr = $('sWinRate').value;
-      const pm = $('sPayoutMult').value;
-      const minb = $('sMinBet').value;
-      const maxb = $('sMaxBet').value;
-      const jr = $('sJackpotRate').value;
-      if (wr !== '') settings.winRate = parseInt(wr) / 1000;
-      if (pm !== '') settings.payoutMultiplier = parseInt(pm) / 10;
-      if (minb !== '') settings.minBet = parseInt(minb);
-      if (maxb !== '') settings.maxBet = parseInt(maxb);
-      if (jr !== '') settings.jackpotHitRate = parseFloat(jr) / 1000;
-      const res = await api.put(`/api/admin/users/${currentSettingsUser}/settings`, settings);
-      if (res.error) { $('sNote').textContent = 'Error: ' + res.error; }
+      console.log("[Admin] Saving user settings for", currentSettingsUser);
+      const wr = getSliderVal('sWinRate', 200);
+      const pm = getSliderVal('sPayoutMult', 2);
+      const minb = getSliderVal('sMinBet', null);
+      const maxb = getSliderVal('sMaxBet', null);
+      const jr = getSliderVal('sJackpotRate', 200);
+      if (wr !== null) settings.winRate = wr;
+      if (pm !== null) settings.payoutMultiplier = pm;
+      if (minb !== null) settings.minBet = minb;
+      if (maxb !== null) settings.maxBet = maxb;
+      if (jr !== null) settings.jackpotHitRate = jr;
+      console.log("[Admin] Settings to save:", JSON.stringify(settings));
+      const res = await api.put("/api/admin/users/" + currentSettingsUser + "/settings", settings);
+      if (res.error) { $("sNote").textContent = "Error: " + res.error; }
       else { closeSettings(); currentSettingsUser = null; loadUsers(); loadStats(); }
     }
   };
