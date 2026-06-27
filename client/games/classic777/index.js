@@ -11,29 +11,31 @@ const Classic777 = {
     this.config = config;
     container.innerHTML = `
       <div id="c777">
-        <div id="c777WinMsg" class="win-msg"><span id="c777WinText" class="win-text">🎰 SPIN TO WIN</span></div>
-        <div id="c777Reels" class="reels">
+        <div id="c777WinMsg" class="c777-msg"><span id="c777WinText" class="c777-msg-text">🎰 SPIN TO WIN</span></div>
+        <div id="c777Reels" class="c777-reels">
           <div class="reel" data-reel="0"></div>
           <div class="reel" data-reel="1"></div>
           <div class="reel" data-reel="2"></div>
         </div>
-        <div id="c777Controls" class="controls">
-          <div class="c-row c-top">
-            <div class="bet-group">
-              <button id="c777BetDown" class="bet-btn-sm">−</button>
-              <div class="bet-display"><span class="bet-lbl">BET</span><span id="c777BetDisplay" class="bet-val">100</span></div>
-              <button id="c777BetUp" class="bet-btn-sm">+</button>
+        <div class="c777-bet-row">
+          <div class="c777-bet-group">
+            <button id="c777BetDown" class="c777-bet-btn">−</button>
+            <div class="c777-bet-display">
+              <span class="c777-bet-label">BET</span>
+              <span id="c777BetDisplay" class="c777-bet-value">100</span>
             </div>
-            <div class="win-group"><span class="win-lbl">WIN</span><span id="c777WinDisplay" class="win-val">—</span></div>
+            <button id="c777BetUp" class="c777-bet-btn">+</button>
           </div>
-          <div class="c-row c-bottom">
-            <div class="ctrl-left">
-              <label class="toggle-sm"><input type="checkbox" id="c777Auto"><span>AUTO</span></label>
-              <label class="toggle-sm"><input type="checkbox" id="c777Turbo"><span>TURBO</span></label>
-            </div>
-            <button id="c777SpinBtn" class="spin-btn-lg">SPIN</button>
-            <div class="ctrl-right"><button id="c777MaxBet" class="ctrl-btn-sm">MAX</button></div>
+          <div class="c777-win-display">
+            <span class="c777-win-label">WIN</span>
+            <span id="c777WinDisplay" class="c777-win-value">—</span>
           </div>
+        </div>
+        <div class="c777-ctrl-row">
+          <label class="c777-tog"><input type="checkbox" id="c777Auto"><span>AUTO</span></label>
+          <label class="c777-tog"><input type="checkbox" id="c777Turbo"><span>TURBO</span></label>
+          <button id="c777MaxBet" class="c777-max-btn">MAX</button>
+          <button id="c777SpinBtn" class="c777-spin-btn">SPIN</button>
         </div>
       </div>`;
 
