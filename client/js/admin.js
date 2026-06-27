@@ -193,19 +193,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cfg = await api.get('/api/config');
     if (cfg.error) return;
     cfgDifficulty.value = cfg.difficulty || 'medium';
-    cfgWinRate.value = Math.round((cfg.winRate || 0.15) * 200);
+    cfgWinRate.value = Math.round((cfg.winRate ?? 0.15) * 200);
     cfgWinRateVal.textContent = sliderPct(cfgWinRate.value); _updateSliderFill(cfgWinRate);
-    cfgPayout.value = Math.round((cfg.payoutMultiplier || 3) * 2);
+    cfgPayout.value = Math.round((cfg.payoutMultiplier ?? 3) * 2);
     cfgPayoutVal.textContent = sliderMult(cfgPayout.value); _updateSliderFill(cfgPayout);
-    cfgJackpotRate.value = Math.round((cfg.jackpotHitRate || 0.005) * 200);
+    cfgJackpotRate.value = Math.round((cfg.jackpotHitRate ?? 0.005) * 200);
     cfgJackpotRateVal.textContent = sliderJackpotRate(cfgJackpotRate.value); _updateSliderFill(cfgJackpotRate);
-    cfgJackpot.value = cfg.jackpot || 5000000;
+    cfgJackpot.value = cfg.jackpot ?? 5000000;
     cfgJackpotVal.textContent = sliderRupiah(cfgJackpot.value); _updateSliderFill(cfgJackpot);
-    cfgStartMoney.value = cfg.startingMoney || 10000;
+    cfgStartMoney.value = cfg.startingMoney ?? 10000;
     cfgStartMoneyVal.textContent = sliderRupiah(cfgStartMoney.value); _updateSliderFill(cfgStartMoney);
-    cfgMinBet.value = cfg.minBet || 1000;
+    cfgMinBet.value = cfg.minBet ?? 1000;
     cfgMinBetVal.textContent = sliderRupiah(cfgMinBet.value); _updateSliderFill(cfgMinBet);
-    cfgMaxBet.value = cfg.maxBet || 100000;
+    cfgMaxBet.value = cfg.maxBet ?? 100000;
     cfgMaxBetVal.textContent = sliderRupiah(cfgMaxBet.value); _updateSliderFill(cfgMaxBet);
   }
 
@@ -260,10 +260,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         { wr: 80, pay: 50 }, { wr: 30, pay: 100 }, { wr: 5, pay: 200 },
       ];
       const p = presets[idx];
-      cfgWinRate.value = p.wr;
-      cfgWinRateVal.textContent = (p.wr / 10).toFixed(1) + '%';
+      cfgWinRate.value = Math.round(p.wr / 5);
+      cfgWinRateVal.textContent = sliderPct(cfgWinRate.value);
       cfgPayout.value = p.pay;
-      cfgPayoutVal.textContent = (p.pay / 10) + 'x';
+      cfgPayoutVal.textContent = sliderMult(cfgPayout.value);
     }
     await api.post('/api/admin/config', { difficulty: diff });
     loadConfig(); loadStats();

@@ -8,6 +8,12 @@ const CoinFlip = {
 
   async init(container, config) {
     this.config = config;
+
+    wsClient.on('configChanged', (data) => {
+      if (data.config) {
+        this.config = { ...this.config, ...data.config };
+      }
+    });
     this.state = { balance: 0, bet: 100, spinning: false, username: null };
     container.innerHTML = `
       <div id="cfGame" class="cf-game">

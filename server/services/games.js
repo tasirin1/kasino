@@ -2,6 +2,7 @@
  * Games Registry Service
  * Manages game definitions and per-game configurations.
  * Stored as JSON in data/games.json
+ * All inputs sanitized — never trust client data.
  */
 
 const fs = require('fs');
@@ -175,25 +176,29 @@ function updateGameConfig(gameId, configUpdates) {
 
 function createGame(gameData) {
   const games = getGames();
-  const id = gameData.id || gameData.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const name = (gameData.name || '').trim().substring(0, 50);
+  if (!name) return null;
+  const id = gameData.id || name.toLowerCase().replace(/[^a-z0-9]/g, '');
   if (games.find(g => g.id === id)) return null;
   const game = {
     id,
-    name: gameData.name,
-    category: gameData.category || 'other',
-    description: gameData.description || '',
-    thumbnail: gameData.thumbnail || '',
+    name,
+    category: ['slot', 'arcade', 'table', 'instant-win'].includes(gameData.category) ? gameData.category : 'other',
+    description: (gameData.description || '').substring(0, 200),
+    provider: 'SlotCasino',
+    thumbnail: (gameData.thumbnail || '').substring(0, 200),
+    badge: '',
     enabled: gameData.enabled !== false,
     sortOrder: games.length + 1,
     config: {
-      winRate: 0.2,
-      payoutMultiplier: 2,
-      minBet: 10,
-      maxBet: 5000,
-      jackpotHitRate: 0.005,
-      maxWin: 1000000,
-      maxMultiplier: 100,
-      ...(gameData.config || {}),
+      winRate: Math.max(0, Math.min(1, parseFloat(gameData.config?.winRate) || 0.2)),
+      payoutMultiplier: Math.max(0.1, Math.min(1000, parseFloat(gameData.config?.payoutMultiplier) || 2)),
+      minBet: Math.max(1, parseInt(gameData.config?.minBet) || 10),
+      maxBet: Math.min(999999999, parseInt(gameData.config?.maxBet) || 5000),
+      jackpotHitRate: Math.max(0, Math.min(1, parseFloat(gameData.config?.jackpotHitRate) || 0.005)),
+      maxWin: Math.max(0, parseInt(gameData.config?.maxWin) || 1000000),
+      maxMultiplier: Math.max(1, parseInt(gameData.config?.maxMultiplier) || 100),
+      ...(gameData.config ? {} : {}),
     }
   };
   games.push(game);
@@ -213,7 +218,7 @@ function toggleGame(gameId, enabled) {
   const games = getGames();
   const idx = games.findIndex(g => g.id === gameId);
   if (idx === -1) return null;
-  games[idx].enabled = enabled;
+  games[idx].enabled = !!enabled;
   saveGames(games);
   return games[idx];
 }
@@ -224,7 +229,14 @@ function updateGameMeta(gameId, updates) {
   if (idx === -1) return null;
   const allowed = ['name', 'category', 'description', 'thumbnail', 'sortOrder'];
   for (const key of allowed) {
-    if (updates[key] !== undefined) games[idx][key] = updates[key];
+    if (updates[key] !== undefined) {
+      if (key === 'category') {
+        const valid = ['slot', 'arcade', 'table', 'instant-win', 'other'];
+        if (valid.includes(String(updates[key]))) games[idx][key] = String(updates[key]);
+      } else {
+        games[idx][key] = updates[key];
+      }
+    }
   }
   saveGames(games);
   return games[idx];
@@ -239,7 +251,6 @@ function getEffectiveGameConfig(gameId, username) {
   const merged = { ...gameConfig };
 
   // Global admin config OVERRIDES game defaults
-  // (priority: user > global > game > hardcoded)
   const global = getGlobalConfig();
   for (const key of Object.keys(global)) {
     if (global[key] !== undefined) {
@@ -258,6 +269,13 @@ function getEffectiveGameConfig(gameId, username) {
       }
     }
   }
+
+  // Clamp all numeric values
+  if (merged.winRate !== undefined) merged.winRate = Math.max(0, Math.min(1, parseFloat(merged.winRate) || 0.15));
+  if (merged.payoutMultiplier !== undefined) merged.payoutMultiplier = Math.max(0.1, Math.min(1000, parseFloat(merged.payoutMultiplier) || 2));
+  if (merged.minBet !== undefined) merged.minBet = Math.max(1, parseInt(merged.minBet) || 10);
+  if (merged.maxBet !== undefined) merged.maxBet = Math.min(999999999, parseInt(merged.maxBet) || 10000);
+  if (merged.jackpotHitRate !== undefined) merged.jackpotHitRate = Math.max(0, Math.min(1, parseFloat(merged.jackpotHitRate) || 0.005));
 
   return merged;
 }

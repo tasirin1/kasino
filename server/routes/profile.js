@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const { authenticate } = require('../middleware/auth');
 const storage = require('../services/storage');
 const ws = require('../services/ws');
+const logger = require('../services/logger');
 
 const router = Router();
 
@@ -15,8 +16,8 @@ router.get('/', (req, res) => {
   if (!profile) return res.status(404).json({ error: 'User not found' });
 
   const spins = storage.getSpins(storage.findUser(req.user.username).id, 100);
-  const wins = spins.filter(s => s.payout > 0).length;
-  profile.wins = wins;
+  profile.wins = spins.filter(s => s.payout > 0).length;
+  profile.losses = Math.max(0, profile.totalSpins - profile.wins);
 
   res.json(profile);
 });
@@ -32,20 +33,28 @@ router.post('/update', async (req, res) => {
   if (username && username !== req.user.username) {
     const name = username.trim().toLowerCase();
     if (name.length < 3) return res.status(400).json({ error: 'Username minimal 3 karakter' });
+    if (!/^[a-z0-9_]+$/.test(name)) return res.status(400).json({ error: 'Username hanya boleh huruf, angka, dan underscore' });
     const existing = storage.findUser(name);
     if (existing && existing.username !== req.user.username) return res.status(400).json({ error: 'Username sudah digunakan' });
     storage.updateUser(req.user.username, { username: name });
     req.user.username = name;
   }
 
-  // Change avatar
+  // Change avatar (sanitize — ensure no path traversal)
   if (avatar !== undefined) {
-    storage.updateUser(req.user.username, { avatar });
+    const safeAvatar = String(avatar).replace(/\.\./g, '').replace(/[^a-zA-Z0-9_\-\.\/]/g, '').substring(0, 200);
+    storage.updateUser(req.user.username, { avatar: safeAvatar });
   }
 
   // Update settings
-  if (settings) {
-    storage.updateUserSettings(req.user.username, settings);
+  if (settings && typeof settings === 'object') {
+    const sanitized = {};
+    for (const [key, val] of Object.entries(settings)) {
+      if (typeof val === 'string') sanitized[key] = val.substring(0, 100);
+      else if (typeof val === 'number' && isFinite(val)) sanitized[key] = val;
+      else if (typeof val === 'boolean') sanitized[key] = val;
+    }
+    storage.updateUserSettings(req.user.username, sanitized);
   }
 
   const updated = storage.findUser(req.user.username);
@@ -58,7 +67,7 @@ router.post('/update', async (req, res) => {
   });
 });
 
-// POST /api/profile/password — change password
+// POST /api/profile/password — change password with validation
 router.post('/password', async (req, res) => {
   const user = storage.findUser(req.user.username);
   if (!user) return res.status(404).json({ error: 'User not found' });
@@ -67,8 +76,8 @@ router.post('/password', async (req, res) => {
   if (!oldPassword || !newPassword) {
     return res.status(400).json({ error: 'Password lama dan baru diperlukan' });
   }
-  if (newPassword.length < 4) {
-    return res.status(400).json({ error: 'Password baru minimal 4 karakter' });
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'Password baru minimal 8 karakter' });
   }
 
   const valid = await bcrypt.compare(oldPassword, user.password);
@@ -121,6 +130,7 @@ router.post('/notifications', (req, res) => {
 router.post('/logout', (req, res) => {
   const token = req.headers.authorization?.slice(7);
   if (token) storage.removeUserSession(req.user.username, token);
+  logger.logout(req.user.username, req.ip);
   res.json({ success: true, message: 'Logout berhasil' });
 });
 
@@ -145,6 +155,7 @@ router.delete('/delete', (req, res) => {
   if (user.isAdmin) return res.status(400).json({ error: 'Akun admin tidak bisa dihapus' });
   storage.removeAllUserSessions(username);
   storage.deleteUser(username);
+  logger.error('ACCOUNT_DELETED', { username, deletedBy: username });
   res.json({ success: true, message: 'Akun berhasil dihapus' });
 });
 

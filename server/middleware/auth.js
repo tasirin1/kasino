@@ -11,6 +11,10 @@ function authenticate(req, res, next) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
   req.user = payload;
+  // Verify nonce exists (prevents session fixation)
+  if (!payload.nonce) {
+    return res.status(401).json({ error: 'Invalid session' });
+  }
   next();
 }
 

@@ -9,6 +9,13 @@ const LuckyFruits = {
 
   async init(container, config) {
     this.config = config;
+
+    wsClient.on('configChanged', (data) => {
+      if (data.config) {
+        this.config = { ...this.config, ...data.config };
+        this._updateUI();
+      }
+    });
     // Same layout as classic777
     container.innerHTML = `
       <div id="c777">

@@ -9,6 +9,14 @@ const Classic777 = {
 
   async init(container, config) {
     this.config = config;
+
+    // Listen for real-time config changes from admin
+    wsClient.on('configChanged', (data) => {
+      if (data.config) {
+        this.config = { ...this.config, ...data.config };
+        this._updateUI();
+      }
+    });
     container.innerHTML = `
       <div id="c777">
         <div id="c777WinMsg" class="c777-msg"><span id="c777WinText" class="c777-msg-text">🎰 SPIN TO WIN</span></div>

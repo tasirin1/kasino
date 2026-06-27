@@ -2,6 +2,7 @@
  * JSON file-based storage service.
  * All data persisted as JSON files in the data/ directory.
  * Designed to be easily replaced with SQLite or PostgreSQL later.
+ * All inputs sanitized — never trust client data.
  */
 
 const fs = require('fs');
@@ -10,6 +11,16 @@ const { DEFAULT_CONFIG, DIFFICULTIES } = require('../utils/constants');
 
 const DATA_DIR = path.join(__dirname, '../../data');
 
+// Sanitize directory traversal
+function _safePath(file) {
+  const base = path.resolve(DATA_DIR);
+  const target = path.resolve(path.join(DATA_DIR, file));
+  if (!target.startsWith(base)) {
+    throw new Error('Invalid file path');
+  }
+  return target;
+}
+
 function ensureDir() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 }
@@ -17,15 +28,25 @@ function ensureDir() {
 function read(file) {
   ensureDir();
   try {
-    const raw = fs.readFileSync(path.join(DATA_DIR, file), 'utf8');
+    const raw = fs.readFileSync(_safePath(file), 'utf8');
     return JSON.parse(raw);
   } catch { return null; }
 }
 
 function write(file, data) {
   ensureDir();
-  fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2));
+  fs.writeFileSync(_safePath(file), JSON.stringify(data, null, 2));
   return data;
+}
+
+// Sanitize username — strip HTML/script and limit length
+function _sanitizeUsername(name) {
+  return String(name)
+    .replace(/[<>&"']/g, '') // strip HTML special chars
+    .replace(/[\x00-\x1f]/g, '') // strip control chars
+    .trim()
+    .toLowerCase()
+    .substring(0, 30);
 }
 
 // ===== USERS =====
@@ -41,16 +62,19 @@ function saveUsers(users) {
 }
 
 function findUser(username) {
-  return getUsers().find(u => u.username === username);
+  const sanitized = _sanitizeUsername(username);
+  return getUsers().find(u => u.username === sanitized);
 }
 
 function createUser(username, hashedPassword, startingMoney) {
   const users = getUsers();
+  const safeName = _sanitizeUsername(username);
+  const balance = Math.max(0, Math.min(999999999, parseInt(startingMoney) || 10000));
   const user = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    username,
+    username: safeName,
     password: hashedPassword,
-    balance: startingMoney,
+    balance: balance,
     isAdmin: false,
     createdAt: new Date().toISOString(),
     totalSpins: 0,
@@ -65,8 +89,22 @@ function createUser(username, hashedPassword, startingMoney) {
 
 function updateUser(username, updates) {
   const users = getUsers();
-  const idx = users.findIndex(u => u.username === username);
+  const safeName = _sanitizeUsername(username);
+  const idx = users.findIndex(u => u.username === safeName);
   if (idx === -1) return null;
+  // Only allow specific fields to be updated
+  const allowed = ['password', 'balance', 'isAdmin', 'totalSpins', 'totalWins', 'totalBet', 'totalPayout', 'avatar', 'settings', 'username'];
+  for (const key of Object.keys(updates)) {
+    if (!allowed.includes(key)) {
+      delete updates[key];
+    }
+  }
+  // Sanitize numeric fields
+  if (updates.balance !== undefined) updates.balance = Math.max(0, Math.min(999999999, parseInt(updates.balance) || 0));
+  if (updates.totalSpins !== undefined) updates.totalSpins = Math.max(0, parseInt(updates.totalSpins) || 0);
+  if (updates.totalWins !== undefined) updates.totalWins = Math.max(0, parseInt(updates.totalWins) || 0);
+  if (updates.totalBet !== undefined) updates.totalBet = Math.max(0, parseInt(updates.totalBet) || 0);
+  if (updates.totalPayout !== undefined) updates.totalPayout = Math.max(0, parseInt(updates.totalPayout) || 0);
   users[idx] = { ...users[idx], ...updates };
   saveUsers(users);
   return users[idx];
@@ -74,7 +112,8 @@ function updateUser(username, updates) {
 
 function deleteUser(username) {
   const users = getUsers();
-  const filtered = users.filter(u => u.username !== username);
+  const safeName = _sanitizeUsername(username);
+  const filtered = users.filter(u => u.username !== safeName);
   if (filtered.length === users.length) return false;
   saveUsers(filtered);
   return true;
@@ -82,8 +121,9 @@ function deleteUser(username) {
 
 function resetAllBalances(amount) {
   const users = getUsers();
+  const amt = Math.max(0, Math.min(999999999, parseInt(amount) || 10000));
   for (const u of users) {
-    if (!u.isAdmin) u.balance = amount;
+    if (!u.isAdmin) u.balance = amt;
   }
   saveUsers(users);
   return users;
@@ -96,14 +136,17 @@ const CONFIG_FILE = 'config.json';
 function getConfig() {
   const cfg = read(CONFIG_FILE);
   if (cfg) return cfg;
-  // Initialize with defaults
   write(CONFIG_FILE, { ...DEFAULT_CONFIG });
   return { ...DEFAULT_CONFIG };
 }
 
 function updateConfig(updates) {
   const cfg = getConfig();
-  Object.assign(cfg, updates);
+  for (const key of Object.keys(updates)) {
+    if (updates[key] !== undefined && updates[key] !== null) {
+      cfg[key] = updates[key];
+    }
+  }
   write(CONFIG_FILE, cfg);
   return cfg;
 }
@@ -128,13 +171,14 @@ function getJackpot() {
   const jp = read(JACKPOT_FILE);
   if (jp) return jp;
   const cfg = getConfig();
-  write(JACKPOT_FILE, { value: cfg.jackpot });
-  return { value: cfg.jackpot };
+  write(JACKPOT_FILE, { value: cfg.jackpot ?? 5000000 });
+  return { value: cfg.jackpot ?? 5000000 };
 }
 
 function setJackpot(value) {
-  write(JACKPOT_FILE, { value });
-  return { value };
+  const v = Math.max(0, Math.min(999999999, parseInt(value) || 0));
+  write(JACKPOT_FILE, { value: v });
+  return { value: v };
 }
 
 // ===== SPIN HISTORY =====
@@ -143,18 +187,19 @@ const SPINS_FILE = 'spins.json';
 
 function getSpins(userId, limit = 20) {
   const all = read(SPINS_FILE) || [];
-  const userSpins = all.filter(s => s.userId === userId).slice(-limit);
+  const maxLimit = Math.min(Math.max(1, parseInt(limit) || 20), 1000);
+  const userSpins = all.filter(s => s.userId === userId).slice(-maxLimit);
   return userSpins.reverse();
 }
 
 function addSpin(record) {
   const all = read(SPINS_FILE) || [];
+  // Keep only last 10000 entries to prevent file bloat
+  if (all.length > 10000) all.splice(0, all.length - 10000);
   all.push(record);
   write(SPINS_FILE, all);
   return record;
 }
-
-
 
 // ===== PER-ACCOUNT SETTINGS =====
 
@@ -166,14 +211,16 @@ function getUserSettings(username) {
 
 function updateUserSettings(username, settings) {
   const users = getUsers();
-  const idx = users.findIndex(u => u.username === username);
+  const safeName = _sanitizeUsername(username);
+  const idx = users.findIndex(u => u.username === safeName);
   if (idx === -1) return null;
   const user = users[idx];
   if (!user.settings) user.settings = {};
-  // Merge settings
   for (const [key, val] of Object.entries(settings)) {
     if (val === null || val === '') {
       delete user.settings[key];
+    } else if (typeof val === 'string') {
+      user.settings[key] = String(val).substring(0, 100);
     } else {
       user.settings[key] = val;
     }
@@ -188,7 +235,6 @@ function getEffectiveConfig(username) {
   if (!user || !user.settings || Object.keys(user.settings).length === 0) {
     return cfg;
   }
-  // Merge user settings over global config
   return { ...cfg, ...user.settings };
 }
 
@@ -212,7 +258,7 @@ function addUserSession(username, token, device) {
   const all = read(SESSIONS_FILE) || [];
   all.push({
     username,
-    token,
+    token: token ? token.substring(0, 50) : 'unknown',
     device: device || 'unknown',
     createdAt: new Date().toISOString()
   });
@@ -245,7 +291,9 @@ function updateUserNotifications(username, notif) {
   if (!user) return null;
   if (!user.settings) user.settings = {};
   if (!user.settings.notifications) user.settings.notifications = {};
-  Object.assign(user.settings.notifications, notif);
+  for (const [key, val] of Object.entries(notif)) {
+    user.settings.notifications[key] = !!val;
+  }
   return updateUser(username, { settings: user.settings });
 }
 
@@ -266,10 +314,9 @@ function getFullProfile(username) {
   const user = findUser(username);
   if (!user) return null;
   const spins = getSpins(user.id, 1000);
-  const wins = spins.filter(s => s.payout > 0);
   const totalSpins = user.totalSpins || 0;
   const totalWins = user.totalWins || 0;
-  const losses = totalSpins - totalWins;
+  const losses = Math.max(0, totalSpins - totalWins);
   const winRate = totalSpins > 0 ? ((totalWins / totalSpins) * 100).toFixed(1) : '0.0';
   const totalBet = user.totalBet || 0;
   const totalPayout = user.totalPayout || 0;
@@ -282,7 +329,7 @@ function getFullProfile(username) {
     createdAt: user.createdAt,
     totalSpins,
     totalWins,
-    losses: Math.max(0, losses),
+    losses,
     totalBet,
     totalPayout,
     winRate: parseFloat(winRate),
@@ -291,6 +338,7 @@ function getFullProfile(username) {
   };
 }
 
+// Re-export all added functions
 module.exports = {
   getUsers, saveUsers, findUser, createUser, updateUser, deleteUser, resetAllBalances,
   getConfig, updateConfig, getDifficultyConfig,

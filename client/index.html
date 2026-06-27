@@ -4,9 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>slotcasino tasirin — Game</title>
+<style>
+/* Anti-FOUC: hide body until CSS + JS loaded */
+html, body { margin: 0; padding: 0; background: #050008; }
+body { opacity: 0; background: #050008; overflow-x: hidden; }
+</style>
 <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+
 </head>
 <body>
+<script src="/js/fouc.js"></script>
 <div id="app">
   <!-- TOP BAR -->
   <header id="topBar">
@@ -56,6 +65,7 @@
   <div id="historyList"></div>
 </div>
 
+<script src="/js/nav.js"></script>
 <script src="/js/api.js"></script>
 <script src="/js/ws.js"></script>
 <script src="/js/game.js"></script>

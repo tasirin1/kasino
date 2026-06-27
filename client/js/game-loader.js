@@ -85,7 +85,7 @@
         e.preventDefault();
         const u = document.getElementById('gLoginUser')?.value?.trim();
         const p = document.getElementById('gLoginPass')?.value;
-        if (!u || !p) { document.getElementById('gLoginError').textContent = 'Isi semua field'; return; }
+        if (!u || !p) { const err = document.getElementById('gLoginError'); if (err) err.textContent = 'Isi semua field'; return; }
         const r = await api.post('/api/login', { username: u, password: p });
         if (r.error) { const err = document.getElementById('gLoginError'); if (err) err.textContent = r.error; return; }
         api.setToken(r.token);
@@ -143,13 +143,25 @@
         return;
       }
 
-      // 4. Get effective config
-      let config = gameInfo.config || {};
+      // 4. Get effective config (includes admin overrides)
+      let config = { ...(gameInfo.config || {}) };
       if (user && !user.error && user.username) {
+        // Logged-in: get full effective config with per-user overrides
         try {
           const effConfig = await api.get('/api/games/' + gameId + '/config');
           if (effConfig && !effConfig.error) config = effConfig;
         } catch(e) { console.warn('[GameLoader] Config fetch failed, using default'); }
+      } else {
+        // Not logged-in: merge global admin config with game defaults
+        try {
+          const globalConfig = await api.get('/api/config');
+          if (globalConfig && !globalConfig.error) {
+            const keys = ['winRate', 'payoutMultiplier', 'minBet', 'maxBet', 'jackpotHitRate'];
+            for (const k of keys) {
+              if (globalConfig[k] !== undefined) config[k] = globalConfig[k];
+            }
+          }
+        } catch(e) {}
       }
 
       // 5. Init game module

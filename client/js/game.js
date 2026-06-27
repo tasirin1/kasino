@@ -33,7 +33,9 @@ class GameManager {
 
     // WebSocket listeners
     wsClient.on('configChanged', (data) => {
-      if (data.config) this.config = data.config;
+      if (data.config) {
+        this.config = { ...this.config, ...data.config };
+      }
     });
     wsClient.on('balanceChanged', (data) => {
       if (data.balance !== undefined && data.balance >= 0) {
@@ -43,7 +45,6 @@ class GameManager {
         }
       }
     });
-    wsClient.on('jackpotChanged', () => {});
     wsClient.on('settingsChanged', (data) => {
       if (data.username === this.state.username && data.settings) {
         this.state.settings = data.settings;
@@ -75,7 +76,7 @@ class GameManager {
     this.el.betDown?.addEventListener('click', () => this._adjustBet(-50));
     this.el.betUp?.addEventListener('click', () => this._adjustBet(50));
     this.el.maxBet?.addEventListener('click', () => {
-      this.state.bet = Math.min(10000, this.state.balance);
+      this.state.bet = Math.min(this.config?.maxBet || 10000, this.state.balance);
       this._updateUI();
     });
     this.el.autoplay?.addEventListener('change', () => {
@@ -100,14 +101,17 @@ class GameManager {
     this.state.balance = user.balance;
     this.state.username = user.username;
     this.state.settings = user.settings || {};
+    // Load effective game config too
+    const config = await api.get('/api/games/classic777/config');
+    if (config && !config.error) this.config = config;
     this._updateUI();
     this._showMsg('🎰 SPIN TO WIN');
   }
 
   _adjustBet(delta) {
-    const s = this.state.settings || {};
-    const minB = s.minBet || 10;
-    const maxB = s.maxBet || Math.min(this.state.balance, 10000);
+    // Use game config for bet limits, NOT user settings
+    const minB = this.config?.minBet || 10;
+    const maxB = this.config?.maxBet || Math.min(this.state.balance, 10000);
     this.state.bet = Math.max(minB, Math.min(maxB, this.state.bet + delta));
     this._updateUI();
   }
@@ -146,7 +150,6 @@ class GameManager {
     this._showMsg('🎰 SPINNING!');
 
     try {
-      // Call server spin API
       const result = await api.post('/api/spin', { bet: this.state.bet });
       if (result.error) {
         this.state.balance += this.state.bet;
@@ -157,10 +160,8 @@ class GameManager {
         return;
       }
 
-      // Update balance from server
       this.state.balance = result.balance;
 
-      // Spin reels simultaneously with staggered stop
       const turbo = this.state.turbo;
       const stagger = turbo ? 200 : 280;
       const baseDur = turbo ? 800 : 1200;
@@ -169,7 +170,6 @@ class GameManager {
       const promises = this.reels.map((reel, i) => reel.spin(result.grid[i], durations[i]));
       await Promise.all(promises);
 
-      // Show win
       if (result.win && result.payout > 0) {
         this._showMsg(`🎉 WIN Rp${result.payout.toLocaleString("id-ID")}!`, '#FF6B6B');
         if (this.el.winDisplay) {
@@ -177,7 +177,6 @@ class GameManager {
           this.el.winDisplay.classList.add('flash');
           setTimeout(() => this.el.winDisplay.classList.remove('flash'), 900);
         }
-        // Particle burst
         if (this.el.spinBtn) {
           const rect = this.el.spinBtn.getBoundingClientRect();
           this._burst(rect.left + rect.width/2, rect.top);
@@ -195,7 +194,6 @@ class GameManager {
     this.el.spinBtn.disabled = false;
     this._updateUI();
 
-    // Auto-spin
     if (this.state.autoplay && this.state.balance >= this.state.bet) {
       setTimeout(() => this.spin(), this.state.turbo ? 100 : 400);
     } else {
