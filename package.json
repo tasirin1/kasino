@@ -8,7 +8,8 @@
     "dev": "node --watch server/index.js",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js",
-    "db:setup": "node scripts/migrate.js && node scripts/seed.js"
+    "db:setup": "node scripts/migrate.js && node scripts/seed.js",
+    "postinstall": "npx prisma generate || true"
   },
   "dependencies": {
     "@prisma/client": "^7.8.0",
