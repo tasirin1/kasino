@@ -135,42 +135,70 @@ body{display:flex;align-items:center;justify-content:center;
 .particle{position:fixed;pointer-events:none;z-index:999;border-radius:50%}
 
 /* ===== ADMIN ===== */
-#adminApp{min-height:100dvh;overflow-y:auto;padding-bottom:20px}
-#adminApp{width:100vw;height:100dvh;overflow-y:auto;background:#050008;padding:16px}
-.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.admin-header h1{font-size:22px;color:#FFD700;text-shadow:0 0 20px rgba(255,215,0,0.2)}
-.admin-header-right{display:flex;align-items:center;gap:10px}
-.admin-status{font-size:12px;color:#4CAF50}
-.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;max-width:1000px;margin:0 auto}
-.admin-card{background:rgba(20,5,40,0.9);border:1px solid rgba(155,48,255,0.12);border-radius:12px;padding:16px}
-.admin-card h3{font-size:15px;color:#D5AD6D;margin-bottom:12px}
-.stats-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);
-  font-size:13px;color:rgba(180,160,220,0.6)}
-.stats-row strong{color:#fff;font-size:14px}
+#adminApp{min-height:100dvh;overflow-y:auto;overflow-x:hidden;background:#050008;padding:12px;width:100%;max-width:100%;box-sizing:border-box}
+.admin-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.admin-header h1{font-size:18px;color:#FFD700;text-shadow:0 0 20px rgba(255,215,0,0.2);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.admin-status{font-size:12px;color:#4CAF50;white-space:nowrap}
+.admin-grid{display:grid;grid-template-columns:1fr;gap:12px;max-width:1000px;margin:0 auto;width:100%;box-sizing:border-box}
+@media(min-width:640px){.admin-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.admin-grid{grid-template-columns:repeat(2,1fr)}}
+.admin-card{background:rgba(20,5,40,0.9);border:1px solid rgba(155,48,255,0.12);border-radius:12px;padding:14px;width:100%;box-sizing:border-box}
+.admin-card h3{font-size:14px;color:#D5AD6D;margin:0 0 10px}
+.stats-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:12px;color:rgba(180,160,220,0.6)}
+.stats-row strong{color:#fff;font-size:13px}
 .gold{color:#FFD700!important}
-.form-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.form-row label{font-size:12px;color:rgba(180,160,220,0.6);min-width:80px}
-.form-row input[type=range]{flex:1}
-.form-row input[type=number]{flex:1}
-.admin-input{width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(155,48,255,0.2);
-  background:rgba(255,255,255,0.04);color:#fff;font-size:13px;outline:none}
-select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
-  border:1px solid rgba(155,48,255,0.2);background:rgba(255,255,255,0.04);color:#fff;font-size:13px}
+.form-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px}
+.form-row label{font-size:11px;color:rgba(180,160,220,0.6);min-width:70px;flex-shrink:0}
+.form-row input[type=range]{flex:1;min-width:80px;height:20px}
+.form-row input[type=number]{flex:1;min-width:60px}
+.admin-input{width:100%;padding:7px 10px;border-radius:6px;border:1px solid rgba(155,48,255,0.2);
+  background:rgba(255,255,255,0.04);color:#fff;font-size:12px;outline:none;box-sizing:border-box}
+select.admin-input,.form-row select{width:100%;padding:7px;border-radius:6px;
+  border:1px solid rgba(155,48,255,0.2);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;box-sizing:border-box}
 .admin-btn{padding:8px 16px;border:none;border-radius:6px;background:linear-gradient(180deg,#D5AD6D,#B8860B);
-  color:#1a0020;font-size:13px;font-weight:700;cursor:pointer;transition:transform 0.15s}
+  color:#1a0020;font-size:12px;font-weight:700;cursor:pointer;transition:transform 0.15s;white-space:nowrap;user-select:none}
 .admin-btn:active{transform:scale(0.95)}
 .admin-btn.small{padding:5px 10px;font-size:11px}
-.admin-btn.tiny{padding:3px 8px;font-size:11px;min-width:28px}
+.admin-btn.tiny{padding:3px 7px;font-size:10px;min-width:24px}
 .admin-btn.green{background:linear-gradient(180deg,#4CAF50,#2E7D32)!important;color:#fff}
 .admin-btn.red{background:linear-gradient(180deg,#FF6B6B,#C62828)!important;color:#fff}
-.admin-actions{display:flex;gap:8px;margin-bottom:10px}
-.account-row{display:flex;align-items:center;justify-content:space-between;
-  padding:8px 10px;margin-bottom:4px;border-radius:6px;background:rgba(255,255,255,0.03)}
-.acc-info{display:flex;flex-direction:column;gap:2px}
-.acc-name{font-size:14px;color:#D5AD6D}
-.acc-balance{font-size:13px;color:#4CAF50}
-.acc-stats{font-size:11px;color:rgba(180,160,220,0.4)}
-.acc-actions{display:flex;gap:4px}
+.admin-actions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.account-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  padding:7px 10px;margin-bottom:4px;border-radius:6px;background:rgba(255,255,255,0.03);gap:6px}
+.acc-info{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.acc-name{font-size:13px;color:#D5AD6D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-balance{font-size:12px;color:#4CAF50}
+.acc-stats{font-size:10px;color:rgba(180,160,220,0.4)}
+.acc-actions{display:flex;flex-wrap:wrap;gap:4px;flex-shrink:0}
+
+/* Admin responsive: <480px */
+@media(max-width:479px){
+  #adminApp{padding:8px}
+  .admin-header h1{font-size:15px}
+  .admin-card{padding:10px}
+  .form-row label{min-width:60px;font-size:10px}
+  .admin-btn{font-size:11px;padding:6px 12px}
+  .admin-btn.small{font-size:10px;padding:4px 8px}
+  .admin-btn.tiny{font-size:9px;padding:2px 6px}
+  .account-row{padding:6px 8px}
+  .acc-name{font-size:12px}
+  .settings-modal{padding:16px;margin:10px}
+}
+/* Admin responsive: 480-639px */
+@media(min-width:480px) and (max-width:639px){
+  .admin-header h1{font-size:16px}
+}
+@media(max-width:360px){
+  .admin-header{flex-direction:column;align-items:flex-start}
+  .admin-header h1{font-size:14px;white-space:normal}
+  .admin-card{padding:8px}
+  .form-row{flex-direction:column;align-items:stretch;gap:4px}
+  .form-row label{min-width:auto}
+  .account-row{flex-direction:column;align-items:stretch}
+  .acc-actions{justify-content:flex-end}
+}
 
 /* ===== RESPONSIVE ===== */
 @media(orientation:landscape) and (max-height:550px){
@@ -185,15 +213,20 @@ select.admin-input,.form-row select{width:100%;padding:8px;border-radius:6px;
 
 /* ===== SETTINGS OVERLAY ===== */
 .settings-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);
-  z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+  z-index:1000;display:flex;align-items:center;justify-content:center;padding:12px;overflow-y:auto}
 .settings-modal{background:linear-gradient(135deg,#1a0020,#2d0040,#1a0020);
-  border:1px solid rgba(213,173,109,0.3);border-radius:12px;padding:24px;width:100%;max-width:400px;
-  box-shadow:0 0 40px rgba(213,173,109,0.15)}
-.settings-modal h3{color:#D5AD6D;margin:0 0 16px;text-align:center;font-size:16px}
-.settings-modal .form-row{margin-bottom:12px}
-.settings-modal .form-row label{display:block;font-size:12px;color:rgba(213,173,109,0.8);margin-bottom:4px}
-.settings-modal .form-actions{display:flex;gap:8px;margin-top:16px}
+  border:1px solid rgba(213,173,109,0.3);border-radius:12px;padding:20px;width:100%;max-width:400px;
+  box-shadow:0 0 40px rgba(213,173,109,0.15);margin:auto;max-height:90vh;overflow-y:auto}
+.settings-modal h3{color:#D5AD6D;margin:0 0 14px;text-align:center;font-size:15px}
+.settings-modal .form-row{margin-bottom:10px}
+.settings-modal .form-row label{display:block;font-size:11px;color:rgba(213,173,109,0.8);margin-bottom:3px}
+.settings-modal .form-actions{display:flex;gap:8px;margin-top:14px}
 .settings-modal .form-actions .admin-btn{flex:1}
+/* Settings modal responsive */
+@media(max-width:479px){
+  .settings-modal{padding:14px;margin:8px}
+  .settings-modal h3{font-size:14px}
+}
 
 
 /* ===== PREMIUM LOBBY ===== */
