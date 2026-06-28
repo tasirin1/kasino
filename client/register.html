@@ -13,6 +13,48 @@ body { margin: 0; padding: 0; background: #050008; opacity: 0; overflow-x: hidde
 <link rel="preload" href="/css/nav.css" as="style">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/nav.css">
+<style>
+.captcha-box {
+  background: rgba(213,173,109,0.08);
+  border: 1px solid rgba(213,173,109,0.2);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.captcha-question {
+  flex: 1;
+  font-size: 18px;
+  font-weight: bold;
+  color: #D5AD6D;
+  letter-spacing: 1px;
+}
+.captcha-input {
+  width: 80px;
+  padding: 8px 10px;
+  border: 1px solid rgba(213,173,109,0.3);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+}
+.captcha-input:focus {
+  outline: none;
+  border-color: #D5AD6D;
+  box-shadow: 0 0 8px rgba(213,173,109,0.3);
+}
+.captcha-refresh {
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.7;
+  transition: opacity 0.2s, transform 0.2s;
+  user-select: none;
+}
+.captcha-refresh:hover { opacity: 1; transform: rotate(180deg); }
+</style>
 
 
 </head>
@@ -41,26 +83,75 @@ body { margin: 0; padding: 0; background: #050008; opacity: 0; overflow-x: hidde
       <label>Password</label>
       <input type="password" id="regPass" placeholder="Min 4 characters" required autocomplete="new-password">
     </div>
+    <div class="captcha-box" id="captchaBox">
+      <span class="captcha-question" id="captchaQuestion">...</span>
+      <input type="text" id="captchaAnswer" class="captcha-input" placeholder="?" required autocomplete="off" inputmode="numeric">
+      <span class="captcha-refresh" id="captchaRefresh" title="Ganti soal">⟳</span>
+    </div>
+    <input type="hidden" id="captchaId" value="">
     <div id="regError" class="form-error"></div>
     <button type="submit" class="auth-btn">DAFTAR</button>
   </form>
   <p class="auth-link">Sudah punya akun? <a href="login.html">Masuk</a></p>
 </div>
+<script src="/js/fingerprint.js"></script>
 <script src="/js/nav.js"></script>
 <script src="/js/api.js"></script>
 <script>
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const user = document.getElementById('regUser').value.trim();
-  const pass = document.getElementById('regPass').value;
-  const err = document.getElementById('regError');
-  err.textContent = '';
+(function(){
+  // Load CAPTCHA
+  async function loadCaptcha() {
+    try {
+      const c = await api.get('/api/captcha');
+      if (c.id && c.question) {
+        document.getElementById('captchaId').value = c.id;
+        document.getElementById('captchaQuestion').textContent = c.question;
+        document.getElementById('captchaAnswer').value = '';
+      }
+    } catch(e) {
+      console.warn('[Captcha] Load error:', e);
+    }
+  }
 
-  const res = await api.post('/api/register', { username: user, password: pass });
-  if (res.error) { err.textContent = res.error; return; }
-  api.setToken(res.token);
-  window.location.href = res.user.isAdmin ? 'admin.html' : '/';
-});
+  document.getElementById('captchaRefresh').addEventListener('click', loadCaptcha);
+  loadCaptcha();
+
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = document.getElementById('regUser').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const captchaId = document.getElementById('captchaId').value;
+    const captchaAnswer = document.getElementById('captchaAnswer').value.trim();
+    const err = document.getElementById('regError');
+    err.textContent = '';
+    err.style.color = '';
+
+    if (!captchaAnswer) {
+      err.textContent = 'Mohon isi CAPTCHA';
+      return;
+    }
+
+    const fingerprint = window.getDeviceFingerprint ? window.getDeviceFingerprint() : navigator.userAgent;
+
+    const res = await api.post('/api/register', {
+      username: user,
+      password: pass,
+      captchaId: captchaId,
+      captchaAnswer: captchaAnswer,
+      fingerprint: fingerprint
+    });
+    if (res.error) { err.textContent = res.error; loadCaptcha(); return; }
+    api.setToken(res.token);
+    // Show notice about starting money if present
+    if (res.notice) {
+      err.style.color = '#D5AD6D';
+      err.textContent = res.notice + ' Mengalihkan...';
+      setTimeout(function(){ window.location.href = res.user.isAdmin ? 'admin.html' : '/'; }, 1500);
+      return;
+    }
+    window.location.href = res.user.isAdmin ? 'admin.html' : '/';
+  });
+})();
 </script>
 </body>
 </html>

@@ -467,6 +467,115 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => t.remove(), 3000);
   }
 
+
+  // ===== SECURITY PANEL =====
+  var apiUrl = '/api/admin/security';
+  async function loadSecurity() {
+    try {
+      const summary = await api.get('/api/admin/security/summary');
+      if (summary.error) return;
+      $('secTotalIps').textContent = summary.totalIps;
+      $('secTotalFps').textContent = summary.totalFingerprints;
+      $('secTodayRegs').textContent = summary.todayRegistrations;
+      $('secMultiIps').textContent = summary.multiAccountIps;
+      $('secMultiFps').textContent = summary.multiAccountFps;
+      $('secBlockedIps').textContent = summary.blockedIps;
+      $('secBlockedFps').textContent = summary.blockedFingerprints;
+    } catch(e) { console.warn('[Security] Load error:', e); }
+  }
+
+  function renderSecDetail(title, items, renderFn) {
+    const el = $('secDetail');
+    if (!items || items.length === 0) {
+      el.innerHTML = '<p style="color:#888;padding:10px">Tidak ada data</p>';
+      el.style.display = 'block';
+      return;
+    }
+    let html = '<div style="font-size:12px;color:#D5AD6D;margin-bottom:8px">' + title + ' (' + items.length + ')</div>';
+    items.forEach(function(item, idx) {
+      html += renderFn(item, idx);
+    });
+    el.innerHTML = html;
+    el.style.display = 'block';
+  }
+
+  $('secShowIps').onclick = async function() {
+    const ips = await api.get(apiUrl + '/ips');
+    if (ips.error) return;
+    const entries = Object.entries(ips).filter(function(kv) { return kv[1].accounts && kv[1].accounts.length > 0; });
+    renderSecDetail('Akun per IP', entries, function(kv) {
+      var ip = kv[0], data = kv[1];
+      var col = data.blocked ? '#FF6B6B' : data.accounts.length >= 3 ? '#FFA500' : 'inherit';
+      var btx = data.blocked ? 'Buka Blokir' : 'Blokir';
+      return '<div style="padding:6px 8px;border-bottom:1px solid rgba(213,173,109,0.1);font-size:12px;color:' + col + '">' +
+        '<strong>' + ip + '</strong> \u2014 ' + data.accounts.length + ' akun' +
+        ' <span style="color:rgba(180,160,220,0.4);font-size:10px">' + data.accounts.join(', ') + '</span>' +
+        ' <button class="admin-btn tiny sec-act" style="float:right" data-ep="' + ip + '" data-act="' + (data.blocked?'unblock':'block') + '" data-type="ip">' + btx + '</button>' +
+        '</div>';
+    });
+  };
+
+  $('secShowFps').onclick = async function() {
+    const fps = await api.get(apiUrl + '/fingerprints');
+    if (fps.error) return;
+    const entries = Object.entries(fps).filter(function(kv) { return kv[1].accounts && kv[1].accounts.length > 0; });
+    renderSecDetail('Akun per Perangkat', entries, function(kv) {
+      var fp = kv[0].slice(0, 12) + '...', data = kv[1];
+      var col = data.blocked ? '#FF6B6B' : data.suspicious ? '#FFA500' : 'inherit';
+      var btx = data.blocked ? 'Buka Blokir' : 'Blokir';
+      return '<div style="padding:6px 8px;border-bottom:1px solid rgba(213,173,109,0.1);font-size:12px;color:' + col + '">' +
+        '<strong>' + fp + '</strong> \u2014 ' + data.accounts.length + ' akun, ' + data.ips.length + ' IP' +
+        ' <span style="color:rgba(180,160,220,0.4);font-size:10px">' + data.accounts.join(', ') + '</span>' +
+        (data.suspicious ? ' <span style="color:#FFA500">\u26a0</span>' : '') +
+        ' <button class="admin-btn tiny sec-act" style="float:right" data-ep="' + kv[0] + '" data-act="' + (data.blocked?'unblock':'block') + '" data-type="fp">' + btx + '</button>' +
+        '</div>';
+    });
+  };
+
+  $('secShowRegs').onclick = async function() {
+    const logs = await api.get(apiUrl + '/registrations?limit=50');
+    renderSecDetail('Log Registrasi', logs, function(l) {
+      var col = l.success ? 'inherit' : '#FF6B6B';
+      return '<div style="padding:4px 8px;border-bottom:1px solid rgba(213,173,109,0.05);font-size:11px;color:' + col + '">' +
+        (l.timestamp ? l.timestamp.slice(0, 19).replace('T', ' ') : '') + ' \u2014 ' + l.username +
+        ' (' + l.ip + ') ' + (l.success ? '\u2705' : '\u274c ' + l.reason) +
+        '</div>';
+    });
+  };
+
+  $('secShowSuspicious').onclick = async function() {
+    const data = await api.get(apiUrl + '/suspicious');
+    renderSecDetail('Registrasi Mencurigakan', data, function(l) {
+      return '<div style="padding:4px 8px;border-bottom:1px solid rgba(255,165,0,0.1);font-size:11px;color:#FFA500">' +
+        (l.timestamp ? l.timestamp.slice(0, 19).replace('T', ' ') : '') + ' \u2014 ' + l.username +
+        ' (' + l.ip + ') ' + (l.success ? '\u2705' : '\u274c ' + l.reason) +
+        '</div>';
+    });
+  };
+
+  // Event delegation for security action buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sec-act');
+    if (!btn) return;
+    var type = btn.dataset.type;
+    var ep = btn.dataset.ep;
+    var act = btn.dataset.act;
+    if (!type || !ep || !act) return;
+    var endpoint = type === 'ip' ? apiUrl + '/ips/' + ep + '/' + act : apiUrl + '/fingerprints/' + ep + '/' + act;
+    api.post(endpoint).then(function() {
+      // Refresh the current view
+      if (type === 'ip') { if ($('secShowIps').onclick) $('secShowIps').onclick(); }
+      else { if ($('secShowFps').onclick) $('secShowFps').onclick(); }
+      loadSecurity();
+    });
+  });
+
+  // Load security data
+  loadSecurity();
+
+  // Load security data
+  loadSecurity();
+
   wsClient.on('configChanged', () => { loadConfig(); loadStats(); });
   wsClient.on('balanceChanged', () => { loadUsers(); loadStats(); });
   wsClient.on('gamesUpdated', () => { loadGames(); });

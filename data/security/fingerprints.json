@@ -1,0 +1,26 @@
+{
+  "test_fp": {
+    "accounts": [
+      "newtest123"
+    ],
+    "ips": [
+      "127.0.0.1"
+    ],
+    "firstSeen": "2026-06-28T03:46:45.658Z",
+    "lastSeen": "2026-06-28T03:46:46.120Z",
+    "blocked": false,
+    "suspicious": false
+  },
+  "admin_fp": {
+    "accounts": [
+      "tasirin"
+    ],
+    "ips": [
+      "127.0.0.1"
+    ],
+    "firstSeen": "2026-06-28T03:46:57.427Z",
+    "lastSeen": "2026-06-28T03:46:57.427Z",
+    "blocked": false,
+    "suspicious": false
+  }
+}

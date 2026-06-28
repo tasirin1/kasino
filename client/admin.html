@@ -149,6 +149,28 @@ body { margin: 0; padding: 0; background: #050008; opacity: 0; overflow-x: hidde
 </div>
 
   <!-- SETTINGS OVERLAY -->
+
+    <!-- SECURITY -->
+    <div class="admin-card" id="securityCard">
+      <h3>🔒 Keamanan</h3>
+      <div class="sec-summary">
+        <div class="stats-row"><span>Total IP</span><strong id="secTotalIps">0</strong></div>
+        <div class="stats-row"><span>Total Fingerprint</span><strong id="secTotalFps">0</strong></div>
+        <div class="stats-row"><span>Registrasi Hari Ini</span><strong id="secTodayRegs">0</strong></div>
+        <div class="stats-row"><span>⚠️ Multi-Akun (IP)</span><strong id="secMultiIps" class="warn">0</strong></div>
+        <div class="stats-row"><span>⚠️ Multi-Akun (Perangkat)</span><strong id="secMultiFps" class="warn">0</strong></div>
+        <div class="stats-row"><span>🚫 IP Diblokir</span><strong id="secBlockedIps">0</strong></div>
+        <div class="stats-row"><span>🚫 Perangkat Diblokir</span><strong id="secBlockedFps">0</strong></div>
+      </div>
+      <div style="margin-top:12px">
+        <button id="secShowIps" class="admin-btn tiny">Lihat IP</button>
+        <button id="secShowFps" class="admin-btn tiny">Lihat Perangkat</button>
+        <button id="secShowRegs" class="admin-btn tiny">Log Registrasi</button>
+        <button id="secShowSuspicious" class="admin-btn tiny warn">Mencurigakan</button>
+      </div>
+      <div id="secDetail" class="sec-detail" style="display:none;margin-top:10px;max-height:300px;overflow-y:auto"></div>
+    </div>
+
   <div id="settingsOverlay" class="settings-overlay" style="display:none">
     <div class="settings-modal">
       <h3 id="settingsTitle">Pengaturan Akun</h3>

@@ -344,4 +344,77 @@ router.put('/users/:username/game-settings/:gameId', (req, res) => {
   res.json(users[idx].settings.games[gameId]);
 });
 
+
+// ===== SECURITY / ANTI ABUSE =====
+const security = require('../services/security');
+
+// Get security summary
+router.get('/security/summary', (req, res) => {
+  const summary = security.getSecuritySummary();
+  res.json(summary);
+});
+
+// Get IP tracking data
+router.get('/security/ips', (req, res) => {
+  const ips = security.getAllIps();
+  res.json(ips);
+});
+
+// Block/unblock IP
+router.post('/security/ips/:ip/block', (req, res) => {
+  security.blockIp(req.params.ip);
+  logger.action(req.user.username, 'block_ip', req.params.ip, req.ip);
+  res.json({ success: true });
+});
+router.post('/security/ips/:ip/unblock', (req, res) => {
+  security.unblockIp(req.params.ip);
+  logger.action(req.user.username, 'unblock_ip', req.params.ip, req.ip);
+  res.json({ success: true });
+});
+
+// Get fingerprint data
+router.get('/security/fingerprints', (req, res) => {
+  const fps = security.getAllFingerprints();
+  res.json(fps);
+});
+
+// Block/unblock fingerprint
+router.post('/security/fingerprints/:fp/block', (req, res) => {
+  security.blockFingerprint(req.params.fp);
+  logger.action(req.user.username, 'block_fingerprint', req.params.fp, req.ip);
+  res.json({ success: true });
+});
+router.post('/security/fingerprints/:fp/unblock', (req, res) => {
+  security.unblockFingerprint(req.params.fp);
+  logger.action(req.user.username, 'unblock_fingerprint', req.params.fp, req.ip);
+  res.json({ success: true });
+});
+
+// Get registration logs
+router.get('/security/registrations', (req, res) => {
+  const limit = parseInt(req.query.limit) || 100;
+  const logs = security.getRegistrationLogs(limit);
+  res.json(logs);
+});
+
+// Get suspicious registrations
+router.get('/security/suspicious', (req, res) => {
+  const data = security.getSuspiciousRegistrations();
+  res.json(data);
+});
+
+// Get accounts by IP
+router.get('/security/ips/:ip/accounts', (req, res) => {
+  const data = security.getAccountsByIp(req.params.ip);
+  const users = data.accounts.map(u => storage.findUser(u)).filter(Boolean);
+  res.json(users);
+});
+
+// Get accounts by fingerprint
+router.get('/security/fingerprints/:fp/accounts', (req, res) => {
+  const data = security.getAccountsByFingerprint(req.params.fp);
+  const users = data.accounts.map(u => storage.findUser(u)).filter(Boolean);
+  res.json(users);
+});
+
 module.exports = router;

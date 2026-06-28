@@ -1,0 +1,29 @@
+[
+  {
+    "username": "test999",
+    "ip": "127.0.0.1",
+    "fingerprint": "unknown",
+    "success": false,
+    "reason": "CAPTCHA salah",
+    "userAgent": "",
+    "timestamp": "2026-06-28T03:45:09.874Z"
+  },
+  {
+    "username": "test999",
+    "ip": "127.0.0.1",
+    "fingerprint": "unknown",
+    "success": false,
+    "reason": "CAPTCHA salah",
+    "userAgent": "",
+    "timestamp": "2026-06-28T03:45:33.717Z"
+  },
+  {
+    "username": "newtest123",
+    "ip": "127.0.0.1",
+    "fingerprint": "test_fp",
+    "success": true,
+    "reason": "berhasil",
+    "userAgent": "",
+    "timestamp": "2026-06-28T03:46:45.900Z"
+  }
+]

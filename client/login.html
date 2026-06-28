@@ -47,21 +47,30 @@ body { margin: 0; padding: 0; background: #050008; opacity: 0; overflow-x: hidde
   </form>
   <p class="auth-link">Belum punya akun? <a href="register.html">Daftar</a></p>
 </div>
+<script src="/js/fingerprint.js"></script>
 <script src="/js/nav.js"></script>
 <script src="/js/api.js"></script>
 <script>
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const user = document.getElementById('loginUser').value.trim();
-  const pass = document.getElementById('loginPass').value;
-  const err = document.getElementById('loginError');
-  err.textContent = '';
+(function(){
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const err = document.getElementById('loginError');
+    err.textContent = '';
 
-  const res = await api.post('/api/login', { username: user, password: pass });
-  if (res.error) { err.textContent = res.error; return; }
-  api.setToken(res.token);
-  window.location.href = res.user.isAdmin ? 'admin.html' : '/';
-});
+    const fingerprint = window.getDeviceFingerprint ? window.getDeviceFingerprint() : navigator.userAgent;
+
+    const res = await api.post('/api/login', { 
+      username: user, 
+      password: pass,
+      fingerprint: fingerprint
+    });
+    if (res.error) { err.textContent = res.error; return; }
+    api.setToken(res.token);
+    window.location.href = res.user.isAdmin ? 'admin.html' : '/';
+  });
+})();
 </script>
 </body>
 </html>

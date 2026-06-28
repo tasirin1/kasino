@@ -1,0 +1,11 @@
+{
+  "127.0.0.1": {
+    "accounts": [
+      "newtest123",
+      "tasirin"
+    ],
+    "firstSeen": "2026-06-28T03:46:45.657Z",
+    "lastSeen": "2026-06-28T03:46:57.422Z",
+    "blocked": false
+  }
+}

@@ -29,7 +29,7 @@ function verifyToken(token) {
   }
 }
 
-async function register(username, password) {
+async function register(username, password, startingMoneyOverride) {
   if (!username || !password) return { error: 'Username and password required' };
   const name = username.trim().toLowerCase();
   if (name.length < 3) return { error: 'Username must be at least 3 characters' };
@@ -45,7 +45,8 @@ async function register(username, password) {
   const isAdmin = name === ADMIN_USER.toLowerCase();
   const hashed = await bcrypt.hash(password, 10);
   const config = storage.getConfig();
-  const startingMoney = Math.max(0, Math.min(999999999, parseInt(config.startingMoney) || 10000));
+  let startingMoney = Math.max(0, Math.min(999999999, parseInt(config.startingMoney) || 10000));
+  if (startingMoneyOverride !== undefined) startingMoney = Math.max(0, Math.min(999999999, parseInt(startingMoneyOverride) || 0));
   const user = storage.createUser(name, hashed, isAdmin ? 999999999 : startingMoney);
 
   if (isAdmin) {
