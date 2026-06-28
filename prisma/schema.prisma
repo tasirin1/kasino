@@ -1,11 +1,16 @@
+// Prisma schema — v7 compatible
+// DATABASE_URL is passed at runtime via PrismaClient constructor
+// This file is used for:
+//   1. Documentation of the database structure
+//   2. prisma generate (creates TypeScript types / JS client)
+//   3. Future migrations
+
 generator client {
-  provider        = "prisma-client-js"
-  engineType      = "library"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {

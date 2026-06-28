@@ -2,17 +2,17 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (for layer caching)
 COPY package*.json ./
 
-# Install dependencies (including devDeps for prisma generate)
+# Install ALL dependencies (prisma generate needs prisma package)
 RUN npm install
 
-# Generate Prisma client (needed even if not using DB — keeps schema available)
-RUN npx prisma generate
-
-# Copy application
+# Copy the entire project
 COPY . .
+
+# Generate Prisma client ONLY if schema exists
+RUN test -f prisma/schema.prisma && npx prisma generate || echo "No Prisma schema found, skipping generate"
 
 EXPOSE 3000
 
